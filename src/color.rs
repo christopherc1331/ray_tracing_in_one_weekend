@@ -3,7 +3,7 @@ use std::io::Write;
 
 pub type Color = Vec3;
 
-pub fn write_color(out: &mut impl Write, pixel_color: Color) -> std::io::Result<()> {
+pub fn write_color(out: &mut impl Write, pixel_color: Color) {
     let r: f64 = pixel_color.x();
     let g: f64 = pixel_color.y();
     let b: f64 = pixel_color.z();
@@ -13,6 +13,5 @@ pub fn write_color(out: &mut impl Write, pixel_color: Color) -> std::io::Result<
     let g_byte: i64 = (255.999f64 * g) as i64;
     let b_byte: i64 = (255.999f64 * b) as i64;
 
-    // TODO : output stream
-    writeln!(out, "{} {} {}", r_byte, g_byte, b_byte)
+    writeln!(out, "{} {} {}", r_byte, g_byte, b_byte).expect("to write ppm metadata");
 }

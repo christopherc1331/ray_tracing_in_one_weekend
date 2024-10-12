@@ -27,7 +27,7 @@ fn main() {
             let g: f64 = j as f64 / (image_height as f64 - 1f64);
             let b: f64 = 0f64;
             let pixel_color: Color = Color::new(r, g, b);
-            write_color(&mut buff, pixel_color).expect("RGB to write to output stream");
+            write_color(&mut buff, pixel_color);
         }
     }
 
