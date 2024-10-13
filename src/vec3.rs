@@ -28,12 +28,7 @@ impl Vec3 {
         self.e[2]
     }
 
-    pub fn flip_neg_vec(mut self) -> Self {
-        self.e[0] = -self.e[0];
-        self.e[1] = -self.e[1];
-        self.e[2] = -self.e[2];
-        self
-    }
+    //pub fn flip_neg_vec(mut self) -> Self {}
 
     pub fn add_vec(mut self, v: Vec3) -> Self {
         self.e[0] += v.e[0];
@@ -60,6 +55,16 @@ impl Vec3 {
 
     pub fn length_squared(self) -> f64 {
         self.e[0] * self.e[0] + self.e[1] * self.e[1] + self.e[2] * self.e[2]
+    }
+}
+
+impl std::ops::Neg for Vec3 {
+    type Output = Self;
+    fn neg(mut self) -> Self::Output {
+        self.e[0] = -self.e[0];
+        self.e[1] = -self.e[1];
+        self.e[2] = -self.e[2];
+        self
     }
 }
 

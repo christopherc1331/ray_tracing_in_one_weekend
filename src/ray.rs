@@ -1,4 +1,4 @@
-use crate::vec3::Vec3;
+use crate::{color::Color, vec3::Vec3};
 
 pub type Point3 = Vec3;
 
@@ -26,4 +26,8 @@ impl<'a> Ray<'a> {
     pub fn at(self, t: f64) -> Point3 {
         self.orig.add_vec(self.dir.multiply_vec(t))
     }
+}
+
+pub fn ray_color<'a>(r: &Ray<'a>) -> Color {
+    Color::new(0f64, 0f64, 0f64)
 }
