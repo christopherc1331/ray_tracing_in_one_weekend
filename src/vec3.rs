@@ -28,27 +28,6 @@ impl Vec3 {
         self.e[2]
     }
 
-    //pub fn flip_neg_vec(mut self) -> Self {}
-
-    pub fn add_vec(mut self, v: Vec3) -> Self {
-        self.e[0] += v.e[0];
-        self.e[1] += v.e[1];
-        self.e[2] += v.e[2];
-        self
-    }
-
-    pub fn multiply_vec(mut self, t: f64) -> Self {
-        self.e[0] *= t;
-        self.e[1] *= t;
-        self.e[2] *= t;
-        self
-    }
-
-    pub fn divide_vec(self, t: f64) -> Self {
-        let fraction = 1f64 / t;
-        self.multiply_vec(fraction)
-    }
-
     pub fn length(self) -> f64 {
         self.length_squared().sqrt()
     }
@@ -61,10 +40,80 @@ impl Vec3 {
 impl std::ops::Neg for Vec3 {
     type Output = Self;
     fn neg(mut self) -> Self::Output {
-        self.e[0] = -self.e[0];
-        self.e[1] = -self.e[1];
-        self.e[2] = -self.e[2];
+        self.e[0] *= -1f64;
+        self.e[1] *= -1f64;
+        self.e[2] *= -1f64;
         self
+    }
+}
+
+impl std::ops::AddAssign for Vec3 {
+    fn add_assign(&mut self, rhs: Self) {
+        self.e[0] += rhs.e[0];
+        self.e[1] += rhs.e[1];
+        self.e[2] += rhs.e[2];
+    }
+}
+
+impl std::ops::MulAssign<f64> for Vec3 {
+    fn mul_assign(&mut self, rhs: f64) {
+        self.e[0] *= rhs;
+        self.e[1] *= rhs;
+        self.e[2] *= rhs;
+    }
+}
+
+impl std::ops::Add<Vec3> for Vec3 {
+    type Output = Vec3;
+    fn add(self, rhs: Vec3) -> Vec3 {
+        Vec3::new(
+            self.e[0] + rhs.e[0],
+            self.e[1] + rhs.e[1],
+            self.e[2] + rhs.e[2],
+        )
+    }
+}
+
+impl std::ops::Sub<Vec3> for Vec3 {
+    type Output = Vec3;
+    fn sub(self, rhs: Vec3) -> Vec3 {
+        Vec3::new(
+            self.e[0] - rhs.e[0],
+            self.e[1] - rhs.e[1],
+            self.e[2] - rhs.e[2],
+        )
+    }
+}
+
+impl std::ops::Mul<Vec3> for Vec3 {
+    type Output = Vec3;
+    fn mul(self, rhs: Vec3) -> Vec3 {
+        Vec3::new(
+            self.e[0] * rhs.e[0],
+            self.e[1] * rhs.e[1],
+            self.e[2] * rhs.e[2],
+        )
+    }
+}
+
+impl std::ops::Mul<Vec3> for f64 {
+    type Output = Vec3;
+    fn mul(self, rhs: Vec3) -> Vec3 {
+        Vec3::new(self * rhs.e[0], self * rhs.e[1], self * rhs.e[2])
+    }
+}
+
+impl std::ops::Div<f64> for Vec3 {
+    type Output = Vec3;
+    fn div(self, rhs: f64) -> Vec3 {
+        (1f64 / rhs) * self
+    }
+}
+
+impl std::ops::Mul<f64> for Vec3 {
+    type Output = Vec3;
+    fn mul(self, rhs: f64) -> Vec3 {
+        rhs * self
     }
 }
 

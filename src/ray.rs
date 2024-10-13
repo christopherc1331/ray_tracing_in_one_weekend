@@ -24,7 +24,7 @@ impl<'a> Ray<'a> {
     }
 
     pub fn at(self, t: f64) -> Point3 {
-        self.orig.add_vec(self.dir.multiply_vec(t))
+        *self.orig + (t * *self.dir)
     }
 }
 
