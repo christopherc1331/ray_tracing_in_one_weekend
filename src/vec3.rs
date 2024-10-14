@@ -117,26 +117,6 @@ impl std::ops::Mul<f64> for Vec3 {
     }
 }
 
-pub fn make_from_adding_vecs(u: Vec3, v: Vec3) -> Vec3 {
-    Vec3::new(u.e[0] + v.e[0], u.e[1] + v.e[1], u.e[2] + v.e[2])
-}
-
-pub fn make_from_subtracting_vecs(u: Vec3, v: Vec3) -> Vec3 {
-    Vec3::new(u.e[0] - v.e[0], u.e[1] - v.e[1], u.e[2] - v.e[2])
-}
-
-pub fn make_from_multiplying_vecs(u: Vec3, v: Vec3) -> Vec3 {
-    Vec3::new(u.e[0] * v.e[0], u.e[1] * v.e[1], u.e[2] * v.e[2])
-}
-
-pub fn make_from_multiplying_num(t: f64, v: Vec3) -> Vec3 {
-    Vec3::new(t * v.e[0], t * v.e[1], t * v.e[2])
-}
-
-pub fn make_from_dividing_num(v: Vec3, t: f64) -> Vec3 {
-    make_from_multiplying_num(1f64 / t, v)
-}
-
 pub fn dot(u: Vec3, v: Vec3) -> f64 {
     u.e[0] * v.e[0] + u.e[1] * v.e[1] + u.e[2] * v.e[2]
 }
@@ -150,5 +130,5 @@ pub fn cross(u: Vec3, v: Vec3) -> Vec3 {
 }
 
 pub fn unit_vector(v: Vec3) -> Vec3 {
-    make_from_dividing_num(v, v.length())
+    v / v.length()
 }

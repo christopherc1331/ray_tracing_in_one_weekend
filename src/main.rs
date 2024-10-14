@@ -5,7 +5,7 @@ pub mod vec3;
 use color::Color;
 use ray::Point3;
 use std::io::{self, Write};
-use vec3::{make_from_dividing_num, make_from_subtracting_vecs, Vec3};
+use vec3::Vec3;
 
 use crate::{
     color::write_color,
@@ -18,13 +18,13 @@ fn main() {
     // Calculate the image height, and ensure that it's at least 1
     let image_height: f64 = match image_width / aspect_ratio {
         n if n < 1f64 => 1f64,
-        n => n.round() as f64,
+        n => n.round(),
     };
 
     // Camera
     let focal_length: f64 = 1f64;
     let viewport_height: f64 = 2f64;
-    let viewport_width: f64 = viewport_height * (image_width as f64) / (image_height as f64);
+    let viewport_width: f64 = viewport_height * (image_width / image_height);
     let camera_center: Point3 = Point3::new(0f64, 0f64, 0f64);
 
     // Calculate the vectors across the horizontal and  donw the vertical viewport edges
