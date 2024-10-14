@@ -28,6 +28,6 @@ impl<'a> Ray<'a> {
     }
 }
 
-pub fn ray_color<'a>(r: &Ray<'a>) -> Color {
+pub fn ray_color(r: &Ray) -> Color {
     Color::new(0f64, 0f64, 0f64)
 }

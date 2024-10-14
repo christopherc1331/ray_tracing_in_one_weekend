@@ -7,15 +7,18 @@ use ray::Point3;
 use std::io::{self, Write};
 use vec3::{make_from_dividing_num, make_from_subtracting_vecs, Vec3};
 
-use crate::color::write_color;
+use crate::{
+    color::write_color,
+    ray::{ray_color, Ray},
+};
 
 fn main() {
-    let aspect_ratio: f32 = 16f32 / 9f32;
-    let image_width: i16 = 400;
+    let aspect_ratio: f64 = 16f64 / 9f64;
+    let image_width: f64 = 400f64;
     // Calculate the image height, and ensure that it's at least 1
-    let image_height: i16 = match (image_width as f32) / aspect_ratio {
-        n if n < 1f32 => 1,
-        n => n.round() as i16,
+    let image_height: f64 = match image_width / aspect_ratio {
+        n if n < 1f64 => 1f64,
+        n => n.round() as f64,
     };
 
     // Camera
@@ -29,15 +32,13 @@ fn main() {
     let viewport_v: Vec3 = Vec3::new(0f64, -viewport_height, 0f64);
 
     // Calculate the vectors across the horizontal and vertical delta vectors from pixel to pixel
-    let pixel_delta_u: Vec3 = make_from_dividing_num(viewport_u, image_width as f64);
-    let pixel_delta_v: Vec3 = make_from_dividing_num(viewport_v, image_height as f64);
+    let pixel_delta_u: Vec3 = viewport_u / image_width;
+    let pixel_delta_v: Vec3 = viewport_v / image_height;
 
     // Calculate the location of the upper left pixel
-    // TODO: refactor all these calcs after setting up proper operator overloading
-    //let viewport_upper_left = make_from_subtracting_vecs(
-    //    camera_center,
-    //    make_from_subtracting_vecs(Vec::new(0f64, 0f64, focal_length)),
-    //);
+    let viewport_upper_left =
+        camera_center - Vec3::new(0f64, 0f64, focal_length) - viewport_u / 2f64 - viewport_v / 2f64;
+    let pixel00_loc = viewport_upper_left + 0.5f64 * (pixel_delta_u + pixel_delta_v);
 
     let file = std::fs::File::create("image.ppm").expect("Image file to be created");
     let mut buff = std::io::BufWriter::new(file);
@@ -47,14 +48,15 @@ fn main() {
     writeln!(buff, "255\n").expect("to write ppm metadata");
 
     let mut stdout = io::stdout();
-    for j in 0..image_height {
-        print!("\rScanlines remaining: {}", image_height - j);
+    for j in 0..(image_height as i16) {
+        print!("\rScanlines remaining: {}", (image_height as i16) - j);
         stdout.flush().unwrap();
-        for i in 0..image_width {
-            let r: f64 = i as f64 / (image_width as f64 - 1f64);
-            let g: f64 = j as f64 / (image_height as f64 - 1f64);
-            let b: f64 = 0f64;
-            let pixel_color: Color = Color::new(r, g, b);
+        for i in 0..(image_width as i16) {
+            let pixel_center =
+                pixel00_loc + (i as f64 * pixel_delta_u) + (j as f64 * pixel_delta_v);
+            let ray_direction = pixel_center - camera_center;
+            let ray = Ray::new(&camera_center, &ray_direction);
+            let pixel_color: Color = ray_color(&ray);
             write_color(&mut buff, pixel_color);
         }
     }
