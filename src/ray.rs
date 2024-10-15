@@ -1,6 +1,6 @@
 use crate::{
     color::Color,
-    vec3::{unit_vector, Vec3},
+    vec3::{dot, unit_vector, Vec3},
 };
 
 pub type Point3 = Vec3;
@@ -32,9 +32,21 @@ impl<'a> Ray<'a> {
     }
 }
 
+pub fn hit_sphere(center: &Point3, radius: f64, ray: &Ray) -> bool {
+    let oc: Vec3 = *center - *ray.origin();
+    let a = dot(*ray.direction(), *ray.direction());
+    let b = -2f64 * dot(*ray.direction(), oc);
+    let c = dot(oc, oc) - radius * radius;
+    let discriminant = b * b - 4f64 * a * c;
+    discriminant >= 0f64
+}
+
 // lerp function: blendedValue = (1 − a) * startValue + a * endValue,
-pub fn ray_color(r: &Ray) -> Color {
-    let unit_direction: Vec3 = unit_vector(*r.direction());
+pub fn ray_color(ray: &Ray) -> Color {
+    if hit_sphere(&Point3::new(0f64, 0f64, -1f64), 0.5f64, ray) {
+        return Color::new(1f64, 0f64, 0f64);
+    }
+    let unit_direction: Vec3 = unit_vector(*ray.direction());
     let a = 0.5 * (unit_direction.y() + 1f64);
     (1f64 - a) * Color::new(1f64, 1f64, 1f64) + (a * Color::new(0.5f64, 0.7f64, 1.0f64))
 }
