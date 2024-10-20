@@ -34,13 +34,13 @@ impl<'a> Ray<'a> {
 
 pub fn hit_sphere(center: &Point3, radius: f64, ray: &Ray) -> f64 {
     let oc: Vec3 = *center - *ray.origin();
-    let a = dot(*ray.direction(), *ray.direction());
-    let b = -2f64 * dot(*ray.direction(), oc);
-    let c = dot(oc, oc) - radius * radius;
-    let discriminant = b * b - 4f64 * a * c;
+    let a = ray.direction().length_squared();
+    let h = dot(*ray.direction(), oc);
+    let c = oc.length_squared() - radius * radius;
+    let discriminant = h * h - a * c;
     match discriminant < 0f64 {
         true => -1f64,
-        false => (-b - discriminant.sqrt()) / (2f64 * a),
+        false => (h - discriminant.sqrt()) / a,
     }
 }
 
