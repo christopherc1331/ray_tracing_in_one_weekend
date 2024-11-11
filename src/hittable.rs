@@ -1,8 +1,11 @@
 use crate::{
+    hittable_list::HittableList,
     ray::{Point3, Ray},
+    sphere::Sphere,
     vec3::{dot, Vec3},
 };
 
+#[derive(Default)]
 pub struct HitRecord {
     pub p: Point3,
     pub normal: Vec3,
@@ -10,12 +13,17 @@ pub struct HitRecord {
     pub front_face: bool,
 }
 
-pub trait Hittable {
-    fn hit(&self, r: &Ray, ray_tmin: f64, ray_tmax: f64, rec: &mut HitRecord) -> bool;
+pub enum HittableType<'a> {
+    Sphere(Sphere),
+    List(HittableList<'a>),
+}
+
+pub trait Hittable<'a> {
+    fn hit(&self, r: &Ray, ray_tmin: f64, ray_tmax: f64, rec: &'a mut HitRecord) -> bool;
 }
 
 impl HitRecord {
-    fn set_face_normal(mut self, r: &Ray, outward_normal: &Vec3) {
+    pub fn set_face_normal(&mut self, r: &Ray, outward_normal: &Vec3) {
         // Sets the hit record normal vector
         // NOTE: the parameter `outward_normal` is assumed to have unit length.
 
