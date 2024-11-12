@@ -39,7 +39,7 @@ impl<'a> Hittable<'a> for HittableList<'a> {
                 HittableType::Sphere(s) => s.hit(r, ray_tmin, closest_so_far, &mut temp_rec),
                 _ => false,
             };
-            if hit_anything == true {
+            if hit_anything {
                 closest_so_far = temp_rec.t;
                 hit_rec = Some(&temp_rec);
             }
