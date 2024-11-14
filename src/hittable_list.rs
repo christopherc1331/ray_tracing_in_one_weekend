@@ -35,11 +35,11 @@ impl<'a> Hittable<'a> for HittableList<'a> {
         let mut hit_anything = false;
         let mut closest_so_far = ray_tmax;
         for object in &self.objects {
-            hit_anything = match object.as_ref() {
+            if match object.as_ref() {
                 HittableType::Sphere(s) => s.hit(r, ray_tmin, closest_so_far, &mut temp_rec),
                 _ => false,
-            };
-            if hit_anything {
+            } {
+                hit_anything = true;
                 closest_so_far = temp_rec.t;
                 *rec = temp_rec.clone();
             }

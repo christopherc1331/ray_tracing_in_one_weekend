@@ -31,12 +31,12 @@ fn main() {
 
     // World
     let mut world: HittableList = HittableList::default();
-    let sphere_1: &HittableType =
-        &hittable::HittableType::Sphere(Sphere::new(&Point3::new(0f64, 0f64, -1f64), 0.5f64));
-    let sphere_2: &HittableType =
-        &hittable::HittableType::Sphere(Sphere::new(&Point3::new(0f64, -100.5f64, -1f64), 100f64));
-    world.add(sphere_1);
-    world.add(sphere_2);
+    let sphere_1: HittableType =
+        hittable::HittableType::Sphere(Sphere::new(&Point3::new(0f64, 0f64, -1f64), 0.5f64));
+    let sphere_2: HittableType =
+        hittable::HittableType::Sphere(Sphere::new(&Point3::new(0f64, -100.5f64, -1f64), 100f64));
+    world.add(&sphere_2);
+    world.add(&sphere_1);
 
     // Camera
     let focal_length: f64 = 1f64;
