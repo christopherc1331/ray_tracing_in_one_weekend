@@ -29,7 +29,7 @@ impl<'a> Hittable<'a> for HittableList<'a> {
         r: &crate::ray::Ray,
         ray_tmin: f64,
         ray_tmax: f64,
-        rec: &'a mut crate::hittable::HitRecord,
+        rec: &'a mut HitRecord,
     ) -> bool {
         let mut temp_rec = HitRecord::default();
         let mut hit_anything = false;
