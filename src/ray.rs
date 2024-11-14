@@ -1,5 +1,8 @@
+use std::f64::INFINITY;
+
 use crate::{
     color::Color,
+    hittable::{HitRecord, Hittable, HittableType},
     vec3::{dot, unit_vector, Vec3},
 };
 
@@ -32,24 +35,11 @@ impl<'a> Ray<'a> {
     }
 }
 
-pub fn hit_sphere(center: &Point3, radius: f64, ray: &Ray) -> f64 {
-    let oc: Vec3 = *center - *ray.origin();
-    let a = ray.direction().length_squared();
-    let h = dot(*ray.direction(), oc);
-    let c = oc.length_squared() - radius * radius;
-    let discriminant = h * h - a * c;
-    match discriminant < 0f64 {
-        true => -1f64,
-        false => (h - discriminant.sqrt()) / a,
-    }
-}
-
 // lerp function: blendedValue = (1 − a) * startValue + a * endValue,
-pub fn ray_color(ray: &Ray) -> Color {
-    let t: f64 = hit_sphere(&Point3::new(0f64, 0f64, -1f64), 0.5f64, ray);
-    if t > 0f64 {
-        let n: Vec3 = unit_vector(ray.at(t) - Vec3::new(0f64, 0f64, -1f64));
-        return 0.5 * Color::new(n.x() + 1f64, n.y() + 1f64, n.z() + 1f64);
+pub fn ray_color(ray: &Ray, world: &HittableType) -> Color {
+    let mut rec: HitRecord = HitRecord::default();
+    if world.hit(ray, 0f64, INFINITY, &mut rec) {
+        return 0.5f64 * (rec.normal + Color::new(0f64, 0f64, 0f64));
     }
     let unit_direction: Vec3 = unit_vector(*ray.direction());
     let a = 0.5 * (unit_direction.y() + 1f64);

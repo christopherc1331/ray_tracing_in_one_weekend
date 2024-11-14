@@ -13,17 +13,30 @@ use vec3::Vec3;
 
 use crate::{
     color::write_color,
+    hittable::HittableType,
+    hittable_list::HittableList,
     ray::{ray_color, Ray},
+    sphere::Sphere,
 };
 
 fn main() {
     let aspect_ratio: f64 = 16f64 / 9f64;
     let image_width: f64 = 400f64;
+
     // Calculate the image height, and ensure that it's at least 1
     let image_height: f64 = match image_width / aspect_ratio {
         n if n < 1f64 => 1f64,
         n => n.round(),
     };
+
+    // World
+    let mut world: HittableList = HittableList::default();
+    let sphere_1: &HittableType =
+        &hittable::HittableType::Sphere(Sphere::new(&Point3::new(0f64, 0f64, -1f64), 0.5f64));
+    let sphere_2: &HittableType =
+        &hittable::HittableType::Sphere(Sphere::new(&Point3::new(0f64, -100.5f64, -1f64), 100f64));
+    world.add(sphere_1);
+    world.add(sphere_2);
 
     // Camera
     let focal_length: f64 = 1f64;
@@ -60,7 +73,7 @@ fn main() {
                 pixel00_loc + (i as f64 * pixel_delta_u) + (j as f64 * pixel_delta_v);
             let ray_direction = pixel_center - camera_center;
             let ray = Ray::new(&camera_center, &ray_direction);
-            let pixel_color: Color = ray_color(&ray);
+            let pixel_color: Color = ray_color(&ray, &hittable::HittableType::List(&world));
             write_color(&mut buff, pixel_color);
         }
     }

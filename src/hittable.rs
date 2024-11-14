@@ -13,15 +13,6 @@ pub struct HitRecord {
     pub front_face: bool,
 }
 
-pub enum HittableType<'a> {
-    Sphere(Sphere),
-    List(HittableList<'a>),
-}
-
-pub trait Hittable<'a> {
-    fn hit(&self, r: &Ray, ray_tmin: f64, ray_tmax: f64, rec: &'a mut HitRecord) -> bool;
-}
-
 impl HitRecord {
     pub fn set_face_normal(&mut self, r: &Ray, outward_normal: &Vec3) {
         // Sets the hit record normal vector
@@ -31,5 +22,23 @@ impl HitRecord {
             true => *outward_normal,
             false => -*outward_normal,
         };
+    }
+}
+
+pub enum HittableType<'a> {
+    Sphere(Sphere),
+    List(&'a HittableList<'a>),
+}
+
+pub trait Hittable<'a> {
+    fn hit(&self, r: &Ray, ray_tmin: f64, ray_tmax: f64, rec: &'a mut HitRecord) -> bool;
+}
+
+impl<'a> HittableType<'a> {
+    pub fn hit(&self, r: &Ray, ray_tmin: f64, ray_tmax: f64, rec: &'a mut HitRecord) -> bool {
+        match self {
+            Self::List(l) => l.hit(r, ray_tmin, ray_tmax, rec),
+            Self::Sphere(s) => s.hit(r, ray_tmin, ray_tmax, rec),
+        }
     }
 }

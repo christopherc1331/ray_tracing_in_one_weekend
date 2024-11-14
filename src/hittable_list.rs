@@ -1,20 +1,21 @@
-use std::borrow::BorrowMut;
+use std::{borrow::BorrowMut, rc::Rc};
 
 use crate::hittable::{HitRecord, Hittable, HittableType};
 
+#[derive(Default)]
 pub struct HittableList<'a> {
-    pub objects: Vec<&'a HittableType<'a>>,
+    pub objects: Vec<Rc<&'a HittableType<'a>>>,
 }
 
 impl<'a> HittableList<'a> {
     pub fn new(object: &'a HittableType) -> Self {
         Self {
-            objects: vec![object],
+            objects: vec![Rc::new(object)],
         }
     }
 
     pub fn add(&mut self, object: &'a HittableType) {
-        self.objects.push(object);
+        self.objects.push(Rc::new(object));
     }
 
     pub fn clear(&mut self) {
@@ -35,7 +36,7 @@ impl<'a> Hittable<'a> for HittableList<'a> {
         let mut hit_anything = false;
         let mut closest_so_far = ray_tmax;
         for object in &self.objects {
-            hit_anything = match object {
+            hit_anything = match object.as_ref() {
                 HittableType::Sphere(s) => s.hit(r, ray_tmin, closest_so_far, &mut temp_rec),
                 _ => false,
             };
