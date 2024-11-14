@@ -5,7 +5,7 @@ use crate::{
     vec3::{dot, Vec3},
 };
 
-#[derive(Default)]
+#[derive(Default, Clone)]
 pub struct HitRecord {
     pub p: Point3,
     pub normal: Vec3,

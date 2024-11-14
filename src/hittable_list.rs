@@ -29,10 +29,9 @@ impl<'a> Hittable<'a> for HittableList<'a> {
         r: &crate::ray::Ray,
         ray_tmin: f64,
         ray_tmax: f64,
-        mut rec: &'a mut crate::hittable::HitRecord,
+        rec: &'a mut crate::hittable::HitRecord,
     ) -> bool {
         let mut temp_rec = HitRecord::default();
-        let mut hit_rec: Option<&HitRecord>;
         let mut hit_anything = false;
         let mut closest_so_far = ray_tmax;
         for object in &self.objects {
@@ -42,7 +41,7 @@ impl<'a> Hittable<'a> for HittableList<'a> {
             };
             if hit_anything {
                 closest_so_far = temp_rec.t;
-                hit_rec = Some(&temp_rec);
+                *rec = temp_rec.clone();
             }
         }
         hit_anything
