@@ -36,12 +36,12 @@ impl<'a> Ray<'a> {
     }
 
     // lerp function: blendedValue = (1 − a) * startValue + a * endValue,
-    pub fn ray_color(ray: &Ray, world: &HittableType) -> Color {
+    pub fn ray_color(&self, world: &HittableType) -> Color {
         let mut rec: HitRecord = HitRecord::default();
-        if world.hit(ray, &Interval::new(0f64, INFINITY), &mut rec) {
+        if world.hit(self, &Interval::new(0f64, INFINITY), &mut rec) {
             return 0.5f64 * (rec.normal + Color::new(1f64, 1f64, 1f64));
         }
-        let unit_direction: Vec3 = unit_vector(*ray.direction());
+        let unit_direction: Vec3 = unit_vector(*self.direction());
         let a = 0.5 * (unit_direction.y() + 1f64);
         (1f64 - a) * Color::new(1f64, 1f64, 1f64) + (a * Color::new(0.5f64, 0.7f64, 1.0f64))
     }

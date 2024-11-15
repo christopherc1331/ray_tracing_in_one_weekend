@@ -71,7 +71,7 @@ fn main() {
                 pixel00_loc + (i as f64 * pixel_delta_u) + (j as f64 * pixel_delta_v);
             let ray_direction = pixel_center - camera_center;
             let ray = Ray::new(&camera_center, &ray_direction);
-            let pixel_color: Color = Ray::ray_color(&ray, &hittable::HittableType::List(&world));
+            let pixel_color: Color = ray.ray_color(&hittable::HittableType::List(&world));
             write_color(&mut buff, pixel_color);
         }
     }
