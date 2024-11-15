@@ -1,6 +1,9 @@
 use std::{borrow::BorrowMut, rc::Rc};
 
-use crate::hittable::{HitRecord, Hittable, HittableType};
+use crate::{
+    hittable::{HitRecord, Hittable, HittableType},
+    interval::Interval,
+};
 
 #[derive(Default)]
 pub struct HittableList<'a> {
@@ -24,19 +27,15 @@ impl<'a> HittableList<'a> {
 }
 
 impl<'a> Hittable<'a> for HittableList<'a> {
-    fn hit(
-        &self,
-        r: &crate::ray::Ray,
-        ray_tmin: f64,
-        ray_tmax: f64,
-        rec: &'a mut HitRecord,
-    ) -> bool {
+    fn hit(&self, r: &crate::ray::Ray, ray_t: &Interval, rec: &'a mut HitRecord) -> bool {
         let mut temp_rec = HitRecord::default();
         let mut hit_anything = false;
-        let mut closest_so_far = ray_tmax;
+        let mut closest_so_far = ray_t.max;
         for object in &self.objects {
             if match object.as_ref() {
-                HittableType::Sphere(s) => s.hit(r, ray_tmin, closest_so_far, &mut temp_rec),
+                HittableType::Sphere(s) => {
+                    s.hit(r, &Interval::new(ray_t.min, closest_so_far), &mut temp_rec)
+                }
                 _ => false,
             } {
                 hit_anything = true;

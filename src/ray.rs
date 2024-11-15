@@ -3,6 +3,7 @@ use std::f64::INFINITY;
 use crate::{
     color::Color,
     hittable::{HitRecord, Hittable, HittableType},
+    interval::Interval,
     vec3::{dot, unit_vector, Vec3},
 };
 
@@ -33,15 +34,15 @@ impl<'a> Ray<'a> {
     pub fn at(self, t: f64) -> Point3 {
         *self.orig + (t * *self.dir)
     }
-}
 
-// lerp function: blendedValue = (1 − a) * startValue + a * endValue,
-pub fn ray_color(ray: &Ray, world: &HittableType) -> Color {
-    let mut rec: HitRecord = HitRecord::default();
-    if world.hit(ray, 0f64, INFINITY, &mut rec) {
-        return 0.5f64 * (rec.normal + Color::new(1f64, 1f64, 1f64));
+    // lerp function: blendedValue = (1 − a) * startValue + a * endValue,
+    pub fn ray_color(ray: &Ray, world: &HittableType) -> Color {
+        let mut rec: HitRecord = HitRecord::default();
+        if world.hit(ray, &Interval::new(0f64, INFINITY), &mut rec) {
+            return 0.5f64 * (rec.normal + Color::new(1f64, 1f64, 1f64));
+        }
+        let unit_direction: Vec3 = unit_vector(*ray.direction());
+        let a = 0.5 * (unit_direction.y() + 1f64);
+        (1f64 - a) * Color::new(1f64, 1f64, 1f64) + (a * Color::new(0.5f64, 0.7f64, 1.0f64))
     }
-    let unit_direction: Vec3 = unit_vector(*ray.direction());
-    let a = 0.5 * (unit_direction.y() + 1f64);
-    (1f64 - a) * Color::new(1f64, 1f64, 1f64) + (a * Color::new(0.5f64, 0.7f64, 1.0f64))
 }

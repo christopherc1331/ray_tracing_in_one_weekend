@@ -1,5 +1,6 @@
 use crate::{
     hittable_list::HittableList,
+    interval::Interval,
     ray::{Point3, Ray},
     sphere::Sphere,
     vec3::{dot, Vec3},
@@ -30,14 +31,14 @@ pub enum HittableType<'a> {
 }
 
 pub trait Hittable<'a> {
-    fn hit(&self, r: &Ray, ray_tmin: f64, ray_tmax: f64, rec: &'a mut HitRecord) -> bool;
+    fn hit(&self, r: &Ray, ray_t: &Interval, rec: &'a mut HitRecord) -> bool;
 }
 
 impl<'a> HittableType<'a> {
-    pub fn hit(&self, r: &Ray, ray_tmin: f64, ray_tmax: f64, rec: &'a mut HitRecord) -> bool {
+    pub fn hit(&self, r: &Ray, ray_t: &Interval, rec: &'a mut HitRecord) -> bool {
         match self {
-            Self::List(l) => l.hit(r, ray_tmin, ray_tmax, rec),
-            Self::Sphere(s) => s.hit(r, ray_tmin, ray_tmax, rec),
+            Self::List(l) => l.hit(r, ray_t, rec),
+            Self::Sphere(s) => s.hit(r, ray_t, rec),
         }
     }
 }
