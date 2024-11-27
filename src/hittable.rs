@@ -18,7 +18,7 @@ impl HitRecord {
         // Sets the hit record normal vector
         // NOTE: the parameter `outward_normal` is assumed to have unit length.
 
-        self.normal = match dot(*r.direction(), *outward_normal) < 0f64 {
+        self.normal = match dot(r.direction(), *outward_normal) < 0f64 {
             true => *outward_normal,
             false => -*outward_normal,
         };
