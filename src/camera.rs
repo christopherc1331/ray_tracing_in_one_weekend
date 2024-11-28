@@ -45,7 +45,7 @@ impl Camera {
             }
         }
 
-        println!();
+        println!("\r");
         println!("Done.");
     }
 

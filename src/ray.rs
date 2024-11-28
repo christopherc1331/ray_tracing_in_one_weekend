@@ -43,7 +43,7 @@ impl Ray {
         }
 
         let mut rec: HitRecord = HitRecord::default();
-        if world.hit(self, &Interval::new(0f64, INFINITY), &mut rec) {
+        if world.hit(self, &Interval::new(0.001f64, INFINITY), &mut rec) {
             let direction = random_on_hemisphere(rec.normal);
             let random_ray = Ray::new(rec.p, direction);
             return 0.5f64 * random_ray.ray_color(depth - 1f64, world);
