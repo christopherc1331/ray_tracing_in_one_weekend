@@ -26,7 +26,7 @@ pub struct Camera {
 }
 
 impl Camera {
-    pub fn render(self, world: HittableList) {
+    pub fn render(self, world: HittableType) {
         let file = std::fs::File::create("image.ppm").expect("Image file to be created");
         let mut buff = std::io::BufWriter::new(file);
 
@@ -39,17 +39,12 @@ impl Camera {
         for j in 0..(self.image_height as i16) {
             print!("\rScanlines remaining: {}", (self.image_height as i16) - j);
             stdout.flush().unwrap();
-            for _ in 0..(self.image_width as i16) {
-                let pixel_color: Color = Color::new(0f64, 0f64, 0f64);
+            for i in 0..(self.image_width as i16) {
+                let mut pixel_color: Color = Color::new(0f64, 0f64, 0f64);
                 for _ in 0..self.samples_per_pixel {
-                    let ray: Ray;
+                    let ray: Ray = self.get_ray(i as f64, j as f64);
+                    pixel_color += ray.ray_color(&world);
                 }
-                // let pixel_center = self.pixel00_loc
-                //     + (i as f64 * self.pixel_delta_u)
-                //     + (j as f64 * self.pixel_delta_v);
-                // let ray_direction = pixel_center - self.center;
-                // let ray = Ray::new(&self.center, &ray_direction);
-                // let pixel_color: Color = ray.ray_color(&hittable::HittableType::List(&world));
                 write_color(&mut buff, pixel_color);
             }
         }
@@ -102,17 +97,7 @@ impl Camera {
         }
     }
 
-    fn ray_color(ray: Ray, world: HittableType) -> Color {
-        let mut rec: HitRecord = HitRecord::default();
-        if world.hit(&ray, &Interval::new(0f64, INFINITY), &mut rec) {
-            return 0.5f64 * (rec.normal + Color::new(1f64, 1f64, 1f64));
-        }
-        let unit_direction: Vec3 = unit_vector(ray.direction());
-        let a = 0.5f64 * (unit_direction.y() + 1f64);
-        (1f64 - a) * Color::new(1f64, 1f64, 1f64) + Color::new(0.5f64, 0.7f64, 1f64)
-    }
-
-    fn get_ray(self, i: f64, j: f64) -> Ray {
+    fn get_ray(&self, i: f64, j: f64) -> Ray {
         // Construct a camera ray originating from the origin and directed at
         // randomly sampled point around the pixel location i, j.
         let offset = Camera::sample_square();
