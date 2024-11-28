@@ -1,16 +1,11 @@
-use std::{
-    f64::INFINITY,
-    io::{self, Write},
-};
+use std::io::{self, Write};
 
 use crate::{
     color::{write_color, Color},
-    hittable::{HitRecord, HittableType},
-    hittable_list::HittableList,
-    interval::Interval,
+    hittable::HittableType,
     ray::{Point3, Ray},
     util::random_double,
-    vec3::{unit_vector, Vec3},
+    vec3::Vec3,
 };
 
 pub struct Camera {

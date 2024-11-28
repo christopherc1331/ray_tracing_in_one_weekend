@@ -1,3 +1,5 @@
+use crate::util::{random_double, random_double_range};
+
 #[derive(Clone, Copy)]
 pub struct Vec3 {
     pub e: [f64; 3],
@@ -34,6 +36,18 @@ impl Vec3 {
 
     pub fn length_squared(self) -> f64 {
         self.e[0] * self.e[0] + self.e[1] * self.e[1] + self.e[2] * self.e[2]
+    }
+
+    pub fn random() -> Self {
+        Self::new(random_double(), random_double(), random_double())
+    }
+
+    pub fn random_range(min: f64, max: f64) -> Self {
+        Self::new(
+            random_double_range(min, max),
+            random_double_range(min, max),
+            random_double_range(min, max),
+        )
     }
 }
 
@@ -131,4 +145,24 @@ pub fn cross(u: Vec3, v: Vec3) -> Vec3 {
 
 pub fn unit_vector(v: Vec3) -> Vec3 {
     v / v.length()
+}
+
+pub fn random_unit_vector() -> Vec3 {
+    loop {
+        let p: Vec3 = Vec3::random();
+        let lens_q: f64 = p.length_squared();
+        if 1e-160f64 < lens_q && lens_q <= 1f64 {
+            return p / lens_q.sqrt();
+        }
+    }
+}
+
+pub fn random_on_hemisphere(normal: Vec3) -> Vec3 {
+    let on_unit_sphere: Vec3 = random_unit_vector();
+
+    // in the same hemisphere as the normal
+    match dot(on_unit_sphere, normal) > 0f64 {
+        true => on_unit_sphere,
+        false => -on_unit_sphere, // invert the vector
+    }
 }

@@ -4,7 +4,7 @@ use crate::{
     color::Color,
     hittable::{HitRecord, Hittable, HittableType},
     interval::Interval,
-    vec3::{dot, unit_vector, Vec3},
+    vec3::{dot, random_on_hemisphere, unit_vector, Vec3},
 };
 
 pub type Point3 = Vec3;
@@ -39,7 +39,9 @@ impl Ray {
     pub fn ray_color(&self, world: &HittableType) -> Color {
         let mut rec: HitRecord = HitRecord::default();
         if world.hit(self, &Interval::new(0f64, INFINITY), &mut rec) {
-            return 0.5f64 * (rec.normal + Color::new(1f64, 1f64, 1f64));
+            let direction = random_on_hemisphere(rec.normal);
+            let random_ray = Ray::new(rec.p, direction);
+            return 0.5f64 * random_ray.ray_color(world);
         }
         let unit_direction: Vec3 = unit_vector(self.direction());
         let a = 0.5 * (unit_direction.y() + 1f64);
