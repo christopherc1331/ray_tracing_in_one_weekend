@@ -24,7 +24,8 @@ fn main() {
 
     let aspect_ratio: f64 = 16f64 / 9f64;
     let image_width: f64 = 400f64;
-    let samples_per_pixel = 100f64;
-    let camera = Camera::new(aspect_ratio, image_width, samples_per_pixel);
+    let samples_per_pixel: f64 = 100f64;
+    let max_depth: f64 = 50f64;
+    let camera = Camera::new(aspect_ratio, image_width, samples_per_pixel, max_depth);
     camera.render(HittableType::List(&world));
 }
