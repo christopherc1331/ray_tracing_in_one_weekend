@@ -3,11 +3,19 @@ use std::io::Write;
 
 pub type Color = Vec3;
 
+fn linear_to_gamma(linear_component: f64) -> f64 {
+    match linear_component {
+        x if x > 0f64 => linear_component.sqrt(),
+        _ => 0f64,
+    }
+}
+
 static INTENSITY: Interval = Interval::new(0f64, 0.999f64);
 pub fn write_color(out: &mut impl Write, pixel_color: Color) {
-    let r: f64 = pixel_color.x();
-    let g: f64 = pixel_color.y();
-    let b: f64 = pixel_color.z();
+    // Apply a linear to gamma transform for gamma 2
+    let r: f64 = linear_to_gamma(pixel_color.x());
+    let g: f64 = linear_to_gamma(pixel_color.y());
+    let b: f64 = linear_to_gamma(pixel_color.z());
 
     // Translate the [0, 1] component values to the byte range [0, 25]
     let r_byte: i64 = (255.999f64 * INTENSITY.clamp(r)) as i64;

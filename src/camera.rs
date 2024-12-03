@@ -44,9 +44,10 @@ impl Camera {
                 write_color(&mut buff, self.pixel_samples_scale * pixel_color);
             }
         }
+        print!("\rScanlines remaining: 0   ");
 
-        stdout.flush().unwrap();
-        println!("\rDone.");
+        println!();
+        println!("Done.");
     }
 
     pub fn new(
