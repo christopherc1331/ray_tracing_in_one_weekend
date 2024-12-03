@@ -45,8 +45,8 @@ impl Camera {
             }
         }
 
-        println!("\r");
-        println!("Done.");
+        stdout.flush().unwrap();
+        println!("\rDone.");
     }
 
     pub fn new(
