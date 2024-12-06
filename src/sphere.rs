@@ -1,6 +1,9 @@
+use std::rc::Rc;
+
 use crate::{
     hittable::{HitRecord, Hittable},
     interval::Interval,
+    material::Material,
     ray::{Point3, Ray},
     vec3::{dot, Vec3},
 };
@@ -8,13 +11,16 @@ use crate::{
 pub struct Sphere {
     center: Point3,
     radius: f64,
+    mat: Rc<Material>,
 }
 
 impl Sphere {
     pub fn new(center: &Point3, radius: f64) -> Self {
+        // TODO: initialize material pointer 'mat'
         Sphere {
             center: *center,
             radius: radius.max(0f64),
+            mat: Rc::new(Material::default()),
         }
     }
 }

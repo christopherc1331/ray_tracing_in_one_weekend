@@ -1,6 +1,7 @@
 use crate::{
     hittable_list::HittableList,
     interval::Interval,
+    material::Material,
     ray::{Point3, Ray},
     sphere::Sphere,
     vec3::{dot, Vec3},
@@ -11,6 +12,7 @@ pub struct HitRecord {
     pub p: Point3,
     pub normal: Vec3,
     pub t: f64,
+    pub mat: Material,
 }
 
 impl HitRecord {
