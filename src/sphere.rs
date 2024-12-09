@@ -17,7 +17,7 @@ pub struct Sphere {
 impl Sphere {
     pub fn new(center: &Point3, radius: f64) -> Self {
         // TODO: initialize material pointer 'mat'
-        Sphere {
+        Self {
             center: *center,
             radius: radius.max(0f64),
             mat: Rc::new(Material::default()),
