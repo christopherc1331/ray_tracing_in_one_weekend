@@ -3,13 +3,18 @@ use std::f64::INFINITY;
 use super::hittables::hittable::{HitRecord, Hittable, HittableType};
 use crate::{
     color::Color,
+    hittables::sphere::Sphere,
     interval::Interval,
+    materials::{
+        material::{Material, Scatter},
+        metal::Metal,
+    },
     vec3::{dot, random_on_hemisphere, random_unit_vector, unit_vector, Vec3},
 };
 
 pub type Point3 = Vec3;
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Default)]
 pub struct Ray {
     orig: Point3,
     dir: Vec3,
@@ -36,19 +41,25 @@ impl Ray {
     }
 
     // lerp function: blendedValue = (1 − a) * startValue + a * endValue,
-    pub fn ray_color(&self, depth: f64, world: &HittableType) -> Color {
+    pub fn ray_color(r: &Ray, depth: f64, world: &HittableType) -> Color {
         // If we've exceeded the ray bounce limit, no more light is gathered
         if depth <= 0f64 {
             return Color::default();
         }
 
         let mut rec: HitRecord = HitRecord::default();
-        if world.hit(self, &Interval::new(0.001f64, INFINITY), &mut rec) {
-            let direction = rec.normal + random_unit_vector();
-            let random_ray = Ray::new(rec.p, direction);
-            return 0.5f64 * random_ray.ray_color(depth - 1f64, world);
+        if world.hit(r, &Interval::new(0.001f64, INFINITY), &mut rec) {
+            let mut scattered: Ray = Ray::default();
+            let mut attenuation: Color = Color::default();
+            let is_scattered: bool = match &rec.mat {
+                Material::Metal(m) => m.scatter(r, &rec, &mut attenuation, &mut scattered),
+            };
+            return match is_scattered {
+                true => attenuation * Ray::ray_color(r, depth - 1f64, world),
+                false => Color::default(),
+            };
         }
-        let unit_direction: Vec3 = unit_vector(self.direction());
+        let unit_direction: Vec3 = unit_vector(r.direction());
         let a = 0.5 * (unit_direction.y() + 1f64);
         (1f64 - a) * Color::new(1f64, 1f64, 1f64) + (a * Color::new(0.5f64, 0.7f64, 1.0f64))
     }

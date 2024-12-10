@@ -1,9 +1,16 @@
 use crate::{color::Color, hittables::hittable::HitRecord, ray::Ray};
 
-#[derive(Default, Clone)]
+use super::metal::Metal;
+
+#[derive(Clone)]
 pub enum Material {
-    #[default]
-    Metal,
+    Metal(Metal),
+}
+
+impl Default for Material {
+    fn default() -> Self {
+        Material::Metal(Metal::default())
+    }
 }
 
 pub trait Scatter {
@@ -13,7 +20,5 @@ pub trait Scatter {
         rec: &HitRecord,
         attenuation: &mut Color,
         scattered: &mut Ray,
-    ) -> bool {
-        todo!()
-    }
+    ) -> bool;
 }

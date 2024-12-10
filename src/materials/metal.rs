@@ -6,6 +6,7 @@ use crate::{
 
 use super::material::Scatter;
 
+#[derive(Default, Clone)]
 pub struct Metal {
     albedo: Color,
 }

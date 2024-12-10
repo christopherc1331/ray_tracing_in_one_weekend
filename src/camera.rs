@@ -39,7 +39,7 @@ impl Camera {
                 let mut pixel_color: Color = Color::new(0f64, 0f64, 0f64);
                 for _ in 0..self.samples_per_pixel as i64 {
                     let ray: Ray = self.get_ray(i as f64, j as f64);
-                    pixel_color += ray.ray_color(self.max_depth, &world);
+                    pixel_color += Ray::ray_color(&ray, self.max_depth, &world);
                 }
                 write_color(&mut buff, self.pixel_samples_scale * pixel_color);
             }
