@@ -3,7 +3,7 @@ use std::rc::Rc;
 use crate::{
     hittable::{HitRecord, Hittable},
     interval::Interval,
-    material::Material,
+    materials::material::Material,
     ray::{Point3, Ray},
     vec3::{dot, Vec3},
 };

@@ -1,7 +1,7 @@
 use crate::{
     hittable_list::HittableList,
     interval::Interval,
-    material::Material,
+    materials::material::Material,
     ray::{Point3, Ray},
     sphere::Sphere,
     vec3::{dot, Vec3},

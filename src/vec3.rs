@@ -172,3 +172,7 @@ pub fn random_on_hemisphere(normal: Vec3) -> Vec3 {
         false => -on_unit_sphere, // invert the vector
     }
 }
+
+pub fn reflect(v: &Vec3, n: &Vec3) -> Vec3 {
+    *v - 2f64 * dot(*v, *n) * *n
+}

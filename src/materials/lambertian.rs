@@ -1,4 +1,5 @@
-use crate::{color::Color, material::Scatter, ray::Ray, vec3::random_unit_vector};
+use super::material::Scatter;
+use crate::{color::Color, ray::Ray, vec3::random_unit_vector};
 
 pub struct Lambertian {
     albedo: Color,
@@ -20,6 +21,7 @@ impl Scatter for Lambertian {
     ) -> bool {
         let mut scatter_direction = rec.normal + random_unit_vector();
 
+        // Catch degenerate scatter direction
         if scatter_direction.near_zero() {
             scatter_direction = rec.normal;
         }
