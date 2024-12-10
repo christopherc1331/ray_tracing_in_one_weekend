@@ -53,6 +53,7 @@ impl Ray {
             let mut attenuation: Color = Color::default();
             let is_scattered: bool = match &rec.mat {
                 Material::Metal(m) => m.scatter(r, &rec, &mut attenuation, &mut scattered),
+                Material::Lambertian(l) => l.scatter(r, &rec, &mut attenuation, &mut scattered),
             };
             return match is_scattered {
                 true => attenuation * Ray::ray_color(r, depth - 1f64, world),

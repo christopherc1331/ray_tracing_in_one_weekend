@@ -1,10 +1,11 @@
 use crate::{color::Color, hittables::hittable::HitRecord, ray::Ray};
 
-use super::metal::Metal;
+use super::{lambertian::Lambertian, metal::Metal};
 
 #[derive(Clone)]
 pub enum Material {
     Metal(Metal),
+    Lambertian(Lambertian),
 }
 
 impl Default for Material {
