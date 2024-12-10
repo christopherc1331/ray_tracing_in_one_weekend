@@ -49,6 +49,12 @@ impl Vec3 {
             random_double_range(min, max),
         )
     }
+
+    pub fn near_zero(&self) -> bool {
+        // Return true if the vector is close to zero in all dimensions
+        let s: f64 = 1e-8;
+        self.e[0].abs() < s && self.e[1].abs() < s && self.e[2].abs() < s
+    }
 }
 
 impl std::ops::Neg for Vec3 {
