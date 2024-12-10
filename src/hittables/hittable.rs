@@ -1,9 +1,8 @@
+use super::{hittable_list::HittableList, sphere::Sphere};
 use crate::{
-    hittable_list::HittableList,
     interval::Interval,
     materials::material::Material,
     ray::{Point3, Ray},
-    sphere::Sphere,
     vec3::{dot, Vec3},
 };
 

@@ -1,18 +1,16 @@
 pub mod camera;
 pub mod color;
-pub mod hittable;
-pub mod hittable_list;
+pub mod hittables;
 pub mod interval;
 pub mod materials;
 pub mod ray;
-pub mod sphere;
 pub mod util;
 pub mod vec3;
 
 use camera::Camera;
 use ray::Point3;
 
-use crate::{hittable::HittableType, hittable_list::HittableList, sphere::Sphere};
+use crate::hittables::{hittable::HittableType, hittable_list::HittableList, sphere::Sphere};
 
 fn main() {
     let mut world: HittableList = HittableList::default();

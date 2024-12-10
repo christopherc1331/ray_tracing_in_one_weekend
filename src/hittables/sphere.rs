@@ -1,7 +1,7 @@
 use std::rc::Rc;
 
+use super::hittable::{HitRecord, Hittable};
 use crate::{
-    hittable::{HitRecord, Hittable},
     interval::Interval,
     materials::material::Material,
     ray::{Point3, Ray},

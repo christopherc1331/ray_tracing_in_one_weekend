@@ -1,9 +1,7 @@
 use std::{borrow::BorrowMut, rc::Rc};
 
-use crate::{
-    hittable::{HitRecord, Hittable, HittableType},
-    interval::Interval,
-};
+use super::hittable::{HitRecord, Hittable, HittableType};
+use crate::interval::Interval;
 
 #[derive(Default)]
 pub struct HittableList<'a> {

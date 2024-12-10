@@ -2,7 +2,7 @@ use std::io::{self, Write};
 
 use crate::{
     color::{write_color, Color},
-    hittable::HittableType,
+    hittables::hittable::HittableType,
     ray::{Point3, Ray},
     util::random_double,
     vec3::Vec3,

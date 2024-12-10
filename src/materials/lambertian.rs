@@ -1,4 +1,5 @@
 use super::material::Scatter;
+use crate::hittables::hittable::HitRecord;
 use crate::{color::Color, ray::Ray, vec3::random_unit_vector};
 
 pub struct Lambertian {
@@ -15,7 +16,7 @@ impl Scatter for Lambertian {
     fn scatter(
         &self,
         r_in: &crate::ray::Ray,
-        rec: &crate::hittable::HitRecord,
+        rec: &HitRecord,
         attenuation: &mut Color,
         scattered: &mut crate::ray::Ray,
     ) -> bool {

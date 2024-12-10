@@ -1,8 +1,8 @@
 use std::f64::INFINITY;
 
+use super::hittables::hittable::{HitRecord, Hittable, HittableType};
 use crate::{
     color::Color,
-    hittable::{HitRecord, Hittable, HittableType},
     interval::Interval,
     vec3::{dot, random_on_hemisphere, random_unit_vector, unit_vector, Vec3},
 };

@@ -1,4 +1,4 @@
-use crate::{color::Color, hittable::HitRecord, ray::Ray};
+use crate::{color::Color, hittables::hittable::HitRecord, ray::Ray};
 
 #[derive(Default, Clone)]
 pub enum Material {
