@@ -1,6 +1,6 @@
 use crate::util::{random_double, random_double_range};
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub struct Vec3 {
     pub e: [f64; 3],
 }

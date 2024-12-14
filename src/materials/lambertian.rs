@@ -2,7 +2,7 @@ use super::material::Scatter;
 use crate::hittables::hittable::HitRecord;
 use crate::{color::Color, ray::Ray, vec3::random_unit_vector};
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Lambertian {
     albedo: Color,
 }

@@ -47,6 +47,7 @@ impl<'a> Hittable<'a> for Sphere {
 
         rec.t = root;
         rec.p = r.at(rec.t);
+        rec.mat = self.mat.as_ref().clone();
         let outward_normal: Vec3 = (rec.p - self.center) / self.radius;
         rec.set_face_normal(r, &outward_normal);
 

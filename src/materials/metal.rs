@@ -6,7 +6,7 @@ use crate::{
 
 use super::material::Scatter;
 
-#[derive(Default, Clone)]
+#[derive(Default, Clone, Debug)]
 pub struct Metal {
     albedo: Color,
 }
@@ -26,8 +26,9 @@ impl Scatter for Metal {
         scattered: &mut crate::ray::Ray,
     ) -> bool {
         let reflected: Vec3 = reflect(&r_in.direction(), &rec.normal);
-        let scattered: Ray = Ray::new(rec.p, reflected);
+        *scattered = Ray::new(rec.p, reflected);
         *attenuation = self.albedo;
+        // println!("metal - ALBEDO: {:?}", self.albedo);
         true
     }
 }

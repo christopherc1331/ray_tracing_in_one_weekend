@@ -42,7 +42,7 @@ fn main() {
         material_left,
     ));
     let sphere_right: HittableType = HittableType::Sphere(Sphere::new(
-        &Point3::new(1f64, 0f64, 1f64),
+        &Point3::new(1f64, 0f64, -1f64),
         0.5f64,
         material_right,
     ));

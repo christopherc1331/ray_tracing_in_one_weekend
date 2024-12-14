@@ -14,7 +14,7 @@ use crate::{
 
 pub type Point3 = Vec3;
 
-#[derive(Clone, Copy, Default)]
+#[derive(Clone, Copy, Default, Debug)]
 pub struct Ray {
     orig: Point3,
     dir: Vec3,
@@ -51,12 +51,20 @@ impl Ray {
         if world.hit(r, &Interval::new(0.001f64, INFINITY), &mut rec) {
             let mut scattered: Ray = Ray::default();
             let mut attenuation: Color = Color::default();
+            // println!("rec AFTER HIT: {:?}", rec);
+            // println!("scattered - BEFORE: {:?}", scattered);
+            // println!("attenuation - BEFORE: {:?}", attenuation);
             let is_scattered: bool = match &rec.mat {
                 Material::Metal(m) => m.scatter(r, &rec, &mut attenuation, &mut scattered),
                 Material::Lambertian(l) => l.scatter(r, &rec, &mut attenuation, &mut scattered),
             };
+            // println!("attenuation - AFTER: {:?}", attenuation);
             return match is_scattered {
-                true => attenuation * Ray::ray_color(r, depth - 1f64, world),
+                true => {
+                    let fook = attenuation * Ray::ray_color(&scattered, depth - 1f64, world);
+                    // println!("scattered - AFTER: {:?}", scattered);
+                    return fook;
+                }
                 false => Color::default(),
             };
         }
