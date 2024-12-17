@@ -23,8 +23,10 @@ fn main() {
         Material::Lambertian(Lambertian::new(Color::new(0.8f64, 0.8f64, 0f64)));
     let material_center: Material =
         Material::Lambertian(Lambertian::new(Color::new(0.1f64, 0.2f64, 0.5f64)));
-    let material_left: Material = Material::Metal(Metal::new(Color::new(0.8f64, 0.8f64, 0.8f64)));
-    let material_right: Material = Material::Metal(Metal::new(Color::new(0.8f64, 0.6f64, 0.2f64)));
+    let material_left: Material =
+        Material::Metal(Metal::new(Color::new(0.8f64, 0.8f64, 0.8f64), 0.3f64));
+    let material_right: Material =
+        Material::Metal(Metal::new(Color::new(0.8f64, 0.6f64, 0.2f64), 1f64));
 
     let sphere_ground: HittableType = HittableType::Sphere(Sphere::new(
         &Point3::new(0f64, -100.5f64, -1f64),

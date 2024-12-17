@@ -1,5 +1,3 @@
-use std::f64::INFINITY;
-
 use super::hittables::hittable::{HitRecord, Hittable, HittableType};
 use crate::{
     color::Color,
@@ -48,7 +46,7 @@ impl Ray {
         }
 
         let mut rec: HitRecord = HitRecord::default();
-        if world.hit(r, &Interval::new(0.001f64, INFINITY), &mut rec) {
+        if world.hit(r, &Interval::new(0.001f64, f64::INFINITY), &mut rec) {
             let mut scattered: Ray = Ray::default();
             let mut attenuation: Color = Color::default();
             // println!("rec AFTER HIT: {:?}", rec);
