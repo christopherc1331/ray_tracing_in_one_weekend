@@ -7,11 +7,9 @@ pub mod ray;
 pub mod util;
 pub mod vec3;
 
-use std::rc::Rc;
-
 use camera::Camera;
 use color::Color;
-use materials::{lambertian::Lambertian, material::Material, metal::Metal};
+use materials::{dielectric::Dielectric, lambertian::Lambertian, material::Material, metal::Metal};
 use ray::Point3;
 
 use crate::hittables::{hittable::HittableType, hittable_list::HittableList, sphere::Sphere};
@@ -23,8 +21,7 @@ fn main() {
         Material::Lambertian(Lambertian::new(Color::new(0.8f64, 0.8f64, 0f64)));
     let material_center: Material =
         Material::Lambertian(Lambertian::new(Color::new(0.1f64, 0.2f64, 0.5f64)));
-    let material_left: Material =
-        Material::Metal(Metal::new(Color::new(0.8f64, 0.8f64, 0.8f64), 0.3f64));
+    let material_left: Material = Material::Dielectric(Dielectric::new(1f64));
     let material_right: Material =
         Material::Metal(Metal::new(Color::new(0.8f64, 0.6f64, 0.2f64), 1f64));
 

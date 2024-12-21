@@ -181,5 +181,5 @@ pub fn refract(uv: &Vec3, n: &Vec3, etai_over_etat: f64) -> Vec3 {
     let cos_theta: f64 = dot(-*uv, *n).min(1f64);
     let r_out_perp: Vec3 = etai_over_etat * (*uv + cos_theta * *n);
     let r_out_prep_parallel: Vec3 = -(1f64 - r_out_perp.length_squared()).abs().sqrt() * *n;
-    r_out_perp - r_out_prep_parallel
+    r_out_perp + r_out_prep_parallel
 }

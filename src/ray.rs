@@ -55,6 +55,7 @@ impl Ray {
             let is_scattered: bool = match &rec.mat {
                 Material::Metal(m) => m.scatter(r, &rec, &mut attenuation, &mut scattered),
                 Material::Lambertian(l) => l.scatter(r, &rec, &mut attenuation, &mut scattered),
+                Material::Dielectric(d) => d.scatter(r, &rec, &mut attenuation, &mut scattered),
             };
             // println!("attenuation - AFTER: {:?}", attenuation);
             return match is_scattered {
