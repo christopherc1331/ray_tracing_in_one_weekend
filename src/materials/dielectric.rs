@@ -1,7 +1,7 @@
 use crate::{
     color::Color,
     ray::Ray,
-    vec3::{refract, unit_vector, Vec3},
+    vec3::{dot, reflect, refract, unit_vector, Vec3},
 };
 
 use super::material::Scatter;
@@ -31,8 +31,14 @@ impl Scatter for Dielectric {
             false => self.refraction_index,
         };
         let unit_direction: Vec3 = unit_vector(r_in.direction());
-        let refracted: Vec3 = refract(&unit_direction, &rec.normal, ri);
-        *scattered = Ray::new(rec.p, refracted);
+        let cos_theta: f64 = dot(-unit_direction, rec.normal).min(1f64);
+        let sin_theta: f64 = (1f64 - cos_theta.powi(2)).sqrt();
+        let cannot_refract = ri * sin_theta > 1f64;
+        let direction: Vec3 = match cannot_refract {
+            true => reflect(&unit_direction, &rec.normal),
+            false => refract(&unit_direction, &rec.normal, ri),
+        };
+        *scattered = Ray::new(rec.p, direction);
         true
     }
 }
