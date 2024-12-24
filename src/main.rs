@@ -21,7 +21,7 @@ fn main() {
         Material::Lambertian(Lambertian::new(Color::new(0.8f64, 0.8f64, 0f64)));
     let material_center: Material =
         Material::Lambertian(Lambertian::new(Color::new(0.1f64, 0.2f64, 0.5f64)));
-    let material_left: Material = Material::Dielectric(Dielectric::new(1f64));
+    let material_left: Material = Material::Dielectric(Dielectric::new(1.5f64));
     let material_right: Material =
         Material::Metal(Metal::new(Color::new(0.8f64, 0.6f64, 0.2f64), 1f64));
 
