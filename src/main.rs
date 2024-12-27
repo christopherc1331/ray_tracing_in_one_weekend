@@ -9,7 +9,7 @@ pub mod vec3;
 
 use std::f64::consts::PI;
 
-use camera::Camera;
+use camera::{Camera, CameraConfig};
 use color::Color;
 use materials::{dielectric::Dielectric, lambertian::Lambertian, material::Material, metal::Metal};
 use ray::Point3;
@@ -60,24 +60,17 @@ fn main() {
     world.add(&sphere_bubble);
     world.add(&sphere_right);
 
-    let aspect_ratio: f64 = 16f64 / 9f64;
-    let image_width: f64 = 400f64;
-    let samples_per_pixel: f64 = 100f64;
-    let max_depth: i16 = 50;
-    let vfov: f64 = 20f64;
-    let look_from: Point3 = Point3::new(-2f64, 2f64, 1f64);
-    let look_at: Point3 = Point3::new(0f64, 0f64, -1f64);
-    let v_up: Vec3 = Vec3::new(0f64, 1f64, 0f64);
-    let camera = Camera::new(
-        aspect_ratio,
-        image_width,
-        samples_per_pixel,
-        max_depth,
-        vfov,
-        look_from,
-        look_at,
-        v_up,
-    );
+    let cam_config = CameraConfig {
+        aspect_ratio: 16f64 / 9f64,
+        image_width: 400f64,
+        samples_per_pixel: 100f64,
+        max_depth: 50,
+        vfov: 20f64,
+        look_from: Point3::new(-2f64, 2f64, 1f64),
+        look_at: Point3::new(0f64, 0f64, -1f64),
+        v_up: Vec3::new(0f64, 1f64, 0f64),
+    };
+    let camera = Camera::new(cam_config);
 
     camera.render(HittableType::List(&world));
 }

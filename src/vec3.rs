@@ -163,6 +163,19 @@ pub fn random_unit_vector() -> Vec3 {
     }
 }
 
+pub fn random_in_unit_disk() -> Vec3 {
+    loop {
+        let p: Vec3 = Vec3::new(
+            random_double_range(-1f64, 1f64),
+            random_double_range(-1f64, 1f64),
+            0f64,
+        );
+        if p.length_squared() < 1f64 {
+            return p;
+        }
+    }
+}
+
 pub fn random_on_hemisphere(normal: Vec3) -> Vec3 {
     let on_unit_sphere: Vec3 = random_unit_vector();
 
