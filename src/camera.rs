@@ -4,7 +4,7 @@ use crate::{
     color::{write_color, Color},
     hittables::hittable::HittableType,
     ray::{Point3, Ray},
-    util::random_double,
+    util::{degrees_to_radians, random_double},
     vec3::Vec3,
 };
 
@@ -13,6 +13,7 @@ pub struct Camera {
     pub image_width: f64,
     pub samples_per_pixel: f64,
     pub max_depth: f64,
+    pub vfov: f64,
     pixel_samples_scale: f64,
     image_height: f64,
     center: Point3,
@@ -55,6 +56,7 @@ impl Camera {
         image_width: f64,
         samples_per_pixel: f64,
         max_depth: f64,
+        vfov: f64,
     ) -> Self {
         // Calculate the image height, and ensure that it's at least 1
         let image_height: f64 = match image_width / aspect_ratio {
@@ -64,9 +66,11 @@ impl Camera {
 
         let pixel_samples_scale: f64 = 1f64 / samples_per_pixel;
 
-        // Camera
+        // Determine the viewport dimensions.
         let focal_length: f64 = 1f64;
-        let viewport_height: f64 = 2f64;
+        let theta: f64 = degrees_to_radians(vfov);
+        let h: f64 = (theta / 2f64).tan();
+        let viewport_height: f64 = 2f64 * h * focal_length;
         let viewport_width: f64 = viewport_height * (image_width / image_height);
         let camera_center: Point3 = Point3::new(0f64, 0f64, 0f64);
 
@@ -91,6 +95,7 @@ impl Camera {
             samples_per_pixel,
             aspect_ratio,
             max_depth,
+            vfov,
             image_height,
             image_width,
             center,
