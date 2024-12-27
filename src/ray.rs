@@ -39,9 +39,9 @@ impl Ray {
     }
 
     // lerp function: blendedValue = (1 − a) * startValue + a * endValue,
-    pub fn ray_color(r: &Ray, depth: f64, world: &HittableType) -> Color {
+    pub fn ray_color(r: &Ray, depth: i16, world: &HittableType) -> Color {
         // If we've exceeded the ray bounce limit, no more light is gathered
-        if depth <= 0f64 {
+        if depth <= 0 {
             return Color::default();
         }
 
@@ -55,7 +55,7 @@ impl Ray {
                 Material::Dielectric(d) => d.scatter(r, &rec, &mut attenuation, &mut scattered),
             };
             return match is_scattered {
-                true => attenuation * Ray::ray_color(&scattered, depth - 1f64, world),
+                true => attenuation * Ray::ray_color(&scattered, depth - 1, world),
                 false => Color::default(),
             };
         }
