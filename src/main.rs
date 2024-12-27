@@ -64,7 +64,7 @@ fn main() {
     let image_width: f64 = 400f64;
     let samples_per_pixel: f64 = 100f64;
     let max_depth: i16 = 50;
-    let vfov: f64 = 90f64;
+    let vfov: f64 = 20f64;
     let look_from: Point3 = Point3::new(-2f64, 2f64, 1f64);
     let look_at: Point3 = Point3::new(0f64, 0f64, -1f64);
     let v_up: Vec3 = Vec3::new(0f64, 1f64, 0f64);
