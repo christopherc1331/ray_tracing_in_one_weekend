@@ -7,9 +7,7 @@ pub struct Vec3 {
 
 impl Default for Vec3 {
     fn default() -> Self {
-        Vec3 {
-            e: [0f64, 0f64, 0f64],
-        }
+        Vec3 { e: [0.0, 0.0, 0.0] }
     }
 }
 
@@ -60,9 +58,9 @@ impl Vec3 {
 impl std::ops::Neg for Vec3 {
     type Output = Self;
     fn neg(mut self) -> Self::Output {
-        self.e[0] *= -1f64;
-        self.e[1] *= -1f64;
-        self.e[2] *= -1f64;
+        self.e[0] *= -1.0;
+        self.e[1] *= -1.0;
+        self.e[2] *= -1.0;
         self
     }
 }
@@ -126,7 +124,7 @@ impl std::ops::Mul<Vec3> for f64 {
 impl std::ops::Div<f64> for Vec3 {
     type Output = Vec3;
     fn div(self, rhs: f64) -> Vec3 {
-        (1f64 / rhs) * self
+        (1.0 / rhs) * self
     }
 }
 
@@ -157,7 +155,7 @@ pub fn random_unit_vector() -> Vec3 {
     loop {
         let p: Vec3 = Vec3::random();
         let lens_q: f64 = p.length_squared();
-        if 1e-160f64 < lens_q && lens_q <= 1f64 {
+        if 1.0e-160 < lens_q && lens_q <= 1.0 {
             return p / lens_q.sqrt();
         }
     }
@@ -166,11 +164,11 @@ pub fn random_unit_vector() -> Vec3 {
 pub fn random_in_unit_disk() -> Vec3 {
     loop {
         let p: Vec3 = Vec3::new(
-            random_double_range(-1f64, 1f64),
-            random_double_range(-1f64, 1f64),
-            0f64,
+            random_double_range(-1.0, 1.0),
+            random_double_range(-1.0, 1.0),
+            0.0,
         );
-        if p.length_squared() < 1f64 {
+        if p.length_squared() < 1.0 {
             return p;
         }
     }
@@ -180,19 +178,19 @@ pub fn random_on_hemisphere(normal: Vec3) -> Vec3 {
     let on_unit_sphere: Vec3 = random_unit_vector();
 
     // in the same hemisphere as the normal
-    match dot(on_unit_sphere, normal) > 0f64 {
+    match dot(on_unit_sphere, normal) > 0.0 {
         true => on_unit_sphere,
         false => -on_unit_sphere, // invert the vector
     }
 }
 
 pub fn reflect(v: &Vec3, n: &Vec3) -> Vec3 {
-    *v - 2f64 * dot(*v, *n) * *n
+    *v - 2.0 * dot(*v, *n) * *n
 }
 
 pub fn refract(uv: &Vec3, n: &Vec3, etai_over_etat: f64) -> Vec3 {
-    let cos_theta: f64 = dot(-*uv, *n).min(1f64);
+    let cos_theta: f64 = dot(-*uv, *n).min(1.0);
     let r_out_perp: Vec3 = etai_over_etat * (*uv + cos_theta * *n);
-    let r_out_prep_parallel: Vec3 = -(1f64 - r_out_perp.length_squared()).abs().sqrt() * *n;
+    let r_out_prep_parallel: Vec3 = -(1.0 - r_out_perp.length_squared()).abs().sqrt() * *n;
     r_out_perp + r_out_prep_parallel
 }

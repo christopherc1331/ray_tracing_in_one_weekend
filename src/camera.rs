@@ -54,7 +54,7 @@ impl Camera {
             print!("\rScanlines remaining: {}", (self.image_height as i16) - j);
             stdout.flush().unwrap();
             for i in 0..(self.image_width as i16) {
-                let mut pixel_color: Color = Color::new(0f64, 0f64, 0f64);
+                let mut pixel_color: Color = Color::new(0.0, 0.0, 0.0);
                 for _ in 0..self.samples_per_pixel as i64 {
                     let ray: Ray = self.get_ray(i as f64, j as f64);
                     pixel_color += Ray::ray_color(&ray, self.max_depth, &world);
@@ -71,18 +71,18 @@ impl Camera {
     pub fn new(config: CameraConfig) -> Self {
         // Calculate the image height, and ensure that it's at least 1
         let image_height: f64 = match config.image_width / config.aspect_ratio {
-            n if n < 1f64 => 1f64,
+            n if n < 1.0 => 1.0,
             n => n.round(),
         };
 
-        let pixel_samples_scale: f64 = 1f64 / config.samples_per_pixel;
+        let pixel_samples_scale: f64 = 1.0 / config.samples_per_pixel;
 
         let center: Point3 = config.look_from;
 
         // Determine the viewport dimensions.
         let theta: f64 = degrees_to_radians(config.vfov);
-        let h: f64 = (theta / 2f64).tan();
-        let viewport_height: f64 = 2f64 * h * config.focus_dist;
+        let h: f64 = (theta / 2.0).tan();
+        let viewport_height: f64 = 2.0 * h * config.focus_dist;
         let viewport_width: f64 = viewport_height * (config.image_width / image_height);
 
         // Calculate the u,v,w unit basis vectors for the camera coordinate frame.
@@ -100,12 +100,12 @@ impl Camera {
 
         // Calculate the location of the upper left pixel
         let viewport_upper_left =
-            center - (config.focus_dist * w) - viewport_u / 2f64 - viewport_v / 2f64;
-        let pixel00_loc = viewport_upper_left + 0.5f64 * (pixel_delta_u + pixel_delta_v);
+            center - (config.focus_dist * w) - viewport_u / 2.0 - viewport_v / 2.0;
+        let pixel00_loc = viewport_upper_left + 0.5 * (pixel_delta_u + pixel_delta_v);
 
         // Calculate the camera defocus disk basis vectors.
         let defocus_radius: f64 =
-            config.focus_dist * degrees_to_radians(config.defocus_angle / 2f64).tan();
+            config.focus_dist * degrees_to_radians(config.defocus_angle / 2.0).tan();
         let defocus_disk_u = u * defocus_radius;
         let defocus_disk_v = v * defocus_radius;
 
@@ -135,7 +135,7 @@ impl Camera {
         let pixel_sample = self.pixel00_loc
             + ((i + offset.x()) * self.pixel_delta_u)
             + ((j + offset.y()) * self.pixel_delta_v);
-        let ray_origin: Vec3 = match self.defocus_angle <= 0f64 {
+        let ray_origin: Vec3 = match self.defocus_angle <= 0.0 {
             true => self.center,
             false => self.defocus_disk_sample(),
         };
@@ -144,7 +144,7 @@ impl Camera {
     }
 
     fn sample_square() -> Vec3 {
-        Vec3::new(random_double() - 0.5f64, random_double() - 0.5f64, 0f64)
+        Vec3::new(random_double() - 0.5, random_double() - 0.5, 0.0)
     }
 
     fn defocus_disk_sample(&self) -> Point3 {

@@ -18,7 +18,7 @@ impl Sphere {
     pub fn new(center: &Point3, radius: f64, mat: Material) -> Self {
         Self {
             center: *center,
-            radius: radius.max(0f64),
+            radius: radius.max(0.0),
             mat: Rc::new(mat),
         }
     }
@@ -31,7 +31,7 @@ impl<'a> Hittable<'a> for Sphere {
         let h: f64 = dot(r.direction(), oc);
         let c: f64 = oc.length_squared() - self.radius * self.radius;
         let discriminant: f64 = h * h - a * c;
-        if discriminant < 0f64 {
+        if discriminant < 0.0 {
             return false;
         }
         let sqrtd: f64 = discriminant.sqrt();

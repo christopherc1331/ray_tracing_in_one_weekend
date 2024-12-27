@@ -20,7 +20,7 @@ impl HitRecord {
         // Sets the hit record normal vector
         // NOTE: the parameter `outward_normal` is assumed to have unit length.
 
-        self.front_face = dot(r.direction(), *outward_normal) < 0f64;
+        self.front_face = dot(r.direction(), *outward_normal) < 0.0;
         self.normal = match self.front_face {
             true => *outward_normal,
             false => -*outward_normal,
@@ -28,17 +28,17 @@ impl HitRecord {
     }
 }
 
-pub enum HittableType<'a> {
+pub enum HittableType {
     Sphere(Sphere),
-    List(&'a HittableList<'a>),
+    List(HittableList),
 }
 
 pub trait Hittable<'a> {
     fn hit(&self, r: &Ray, ray_t: &Interval, rec: &'a mut HitRecord) -> bool;
 }
 
-impl<'a> HittableType<'a> {
-    pub fn hit(&self, r: &Ray, ray_t: &Interval, rec: &'a mut HitRecord) -> bool {
+impl HittableType {
+    pub fn hit(&self, r: &Ray, ray_t: &Interval, rec: &mut HitRecord) -> bool {
         match self {
             Self::List(l) => l.hit(r, ray_t, rec),
             Self::Sphere(s) => s.hit(r, ray_t, rec),

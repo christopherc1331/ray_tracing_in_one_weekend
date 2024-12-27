@@ -46,7 +46,7 @@ impl Ray {
         }
 
         let mut rec: HitRecord = HitRecord::default();
-        if world.hit(r, &Interval::new(0.001f64, f64::INFINITY), &mut rec) {
+        if world.hit(r, &Interval::new(0.001, f64::INFINITY), &mut rec) {
             let mut scattered: Ray = Ray::default();
             let mut attenuation: Color = Color::default();
             let is_scattered: bool = match &rec.mat {
@@ -60,7 +60,7 @@ impl Ray {
             };
         }
         let unit_direction: Vec3 = unit_vector(r.direction());
-        let a = 0.5 * (unit_direction.y() + 1f64);
-        (1f64 - a) * Color::new(1f64, 1f64, 1f64) + (a * Color::new(0.5f64, 0.7f64, 1.0f64))
+        let a = 0.5 * (unit_direction.y() + 1.0);
+        (1.0 - a) * Color::new(1.0, 1.0, 1.0) + (a * Color::new(0.5, 0.7, 1.0))
     }
 }

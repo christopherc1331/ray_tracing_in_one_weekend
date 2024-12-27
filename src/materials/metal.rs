@@ -31,6 +31,6 @@ impl Scatter for Metal {
         *scattered = Ray::new(rec.p, reflected);
         *attenuation = self.albedo;
 
-        dot(scattered.direction(), rec.normal) > 0f64
+        dot(scattered.direction(), rec.normal) > 0.0
     }
 }

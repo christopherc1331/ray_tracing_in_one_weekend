@@ -4,18 +4,18 @@ use super::hittable::{HitRecord, Hittable, HittableType};
 use crate::interval::Interval;
 
 #[derive(Default)]
-pub struct HittableList<'a> {
-    pub objects: Vec<Rc<&'a HittableType<'a>>>,
+pub struct HittableList {
+    pub objects: Vec<Rc<HittableType>>,
 }
 
-impl<'a> HittableList<'a> {
-    pub fn new(object: &'a HittableType) -> Self {
+impl HittableList {
+    pub fn new(object: HittableType) -> Self {
         Self {
             objects: vec![Rc::new(object)],
         }
     }
 
-    pub fn add(&mut self, object: &'a HittableType) {
+    pub fn add(&mut self, object: HittableType) {
         self.objects.push(Rc::new(object));
     }
 
@@ -24,7 +24,7 @@ impl<'a> HittableList<'a> {
     }
 }
 
-impl<'a> Hittable<'a> for HittableList<'a> {
+impl<'a> Hittable<'a> for HittableList {
     fn hit(&self, r: &crate::ray::Ray, ray_t: &Interval, rec: &'a mut HitRecord) -> bool {
         let mut temp_rec = HitRecord::default();
         let mut hit_anything = false;
