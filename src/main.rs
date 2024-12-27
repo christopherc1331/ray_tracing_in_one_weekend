@@ -69,6 +69,8 @@ fn main() {
         look_from: Point3::new(-2f64, 2f64, 1f64),
         look_at: Point3::new(0f64, 0f64, -1f64),
         v_up: Vec3::new(0f64, 1f64, 0f64),
+        defocus_angle: 10f64,
+        focus_dist: 3.4f64,
     };
     let camera = Camera::new(cam_config);
 
