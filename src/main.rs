@@ -21,7 +21,8 @@ fn main() {
         Material::Lambertian(Lambertian::new(Color::new(0.8f64, 0.8f64, 0f64)));
     let material_center: Material =
         Material::Lambertian(Lambertian::new(Color::new(0.1f64, 0.2f64, 0.5f64)));
-    let material_left: Material = Material::Dielectric(Dielectric::new(1f64 / 1.33f64));
+    let material_left: Material = Material::Dielectric(Dielectric::new(1.5f64));
+    let material_bubble: Material = Material::Dielectric(Dielectric::new(1f64 / 1.5f64));
     let material_right: Material =
         Material::Metal(Metal::new(Color::new(0.8f64, 0.6f64, 0.2f64), 1f64));
 
@@ -40,6 +41,11 @@ fn main() {
         0.5f64,
         material_left,
     ));
+    let sphere_bubble: HittableType = HittableType::Sphere(Sphere::new(
+        &Point3::new(-1f64, 0f64, -1f64),
+        0.4f64,
+        material_bubble,
+    ));
     let sphere_right: HittableType = HittableType::Sphere(Sphere::new(
         &Point3::new(1f64, 0f64, -1f64),
         0.5f64,
@@ -48,6 +54,7 @@ fn main() {
     world.add(&sphere_ground);
     world.add(&sphere_center);
     world.add(&sphere_left);
+    world.add(&sphere_bubble);
     world.add(&sphere_right);
 
     let aspect_ratio: f64 = 16f64 / 9f64;
