@@ -49,21 +49,13 @@ impl Ray {
         if world.hit(r, &Interval::new(0.001f64, f64::INFINITY), &mut rec) {
             let mut scattered: Ray = Ray::default();
             let mut attenuation: Color = Color::default();
-            // println!("rec AFTER HIT: {:?}", rec);
-            // println!("scattered - BEFORE: {:?}", scattered);
-            // println!("attenuation - BEFORE: {:?}", attenuation);
             let is_scattered: bool = match &rec.mat {
                 Material::Metal(m) => m.scatter(r, &rec, &mut attenuation, &mut scattered),
                 Material::Lambertian(l) => l.scatter(r, &rec, &mut attenuation, &mut scattered),
                 Material::Dielectric(d) => d.scatter(r, &rec, &mut attenuation, &mut scattered),
             };
-            // println!("attenuation - AFTER: {:?}", attenuation);
             return match is_scattered {
-                true => {
-                    let fook = attenuation * Ray::ray_color(&scattered, depth - 1f64, world);
-                    // println!("scattered - AFTER: {:?}", scattered);
-                    return fook;
-                }
+                true => attenuation * Ray::ray_color(&scattered, depth - 1f64, world),
                 false => Color::default(),
             };
         }
