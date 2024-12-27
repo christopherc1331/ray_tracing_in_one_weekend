@@ -60,7 +60,7 @@ fn main() {
     world.add(&sphere_bubble);
     world.add(&sphere_right);
 
-    let cam_config = CameraConfig {
+    let camera = Camera::new(CameraConfig {
         aspect_ratio: 16f64 / 9f64,
         image_width: 400f64,
         samples_per_pixel: 100f64,
@@ -71,8 +71,7 @@ fn main() {
         v_up: Vec3::new(0f64, 1f64, 0f64),
         defocus_angle: 10f64,
         focus_dist: 3.4f64,
-    };
-    let camera = Camera::new(cam_config);
+    });
 
     camera.render(HittableType::List(&world));
 }
