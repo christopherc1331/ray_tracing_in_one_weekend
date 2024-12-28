@@ -1,4 +1,6 @@
 use std::io::{self, Write};
+use std::sync::{Arc, Mutex};
+use std::thread;
 
 use crate::{
     color::{write_color, Color},
@@ -42,29 +44,75 @@ pub struct Camera {
 impl Camera {
     pub fn render(self, world: HittableType) {
         let file = std::fs::File::create("image.ppm").expect("Image file to be created");
-        let mut buff = std::io::BufWriter::new(file);
+        let buff = Arc::new(Mutex::new(std::io::BufWriter::new(file)));
 
-        writeln!(buff, "P3\n").expect("to write ppm metadata");
-        writeln!(buff, "{} {}\n", self.image_width, self.image_height)
-            .expect("to write ppm metadata");
-        writeln!(buff, "255\n").expect("to write ppm metadata");
+        writeln!(buff.lock().unwrap(), "P3\n").expect("to write ppm metadata");
+        writeln!(
+            buff.lock().unwrap(),
+            "{} {}\n",
+            self.image_width as i16,
+            self.image_height as i16
+        )
+        .expect("to write ppm metadata");
+        writeln!(buff.lock().unwrap(), "255\n").expect("to write ppm metadata");
 
-        let mut stdout = io::stdout();
-        for j in 0..(self.image_height as i16) {
-            print!("\rScanlines remaining: {}", (self.image_height as i16) - j);
-            stdout.flush().unwrap();
-            for i in 0..(self.image_width as i16) {
-                let mut pixel_color: Color = Color::new(0.0, 0.0, 0.0);
-                for _ in 0..self.samples_per_pixel as i64 {
-                    let ray: Ray = self.get_ray(i as f64, j as f64);
-                    pixel_color += Ray::ray_color(&ray, self.max_depth, &world);
+        let image_height = self.image_height as i16;
+        let image_width = self.image_width as i16;
+        let samples_per_pixel = self.samples_per_pixel;
+        let max_depth = self.max_depth;
+
+        // Wrap self in an Arc for thread-safe sharing
+        let camera = Arc::new(self);
+
+        // Share `world` among threads
+        let world = Arc::new(world);
+
+        // Divide work into rows
+        let mut handles = Vec::new();
+
+        // Track scanlines progress
+        let progress = Arc::new(Mutex::new(image_height));
+
+        for thread_id in 0..num_cpus::get() {
+            let buff = Arc::clone(&buff);
+            let world = Arc::clone(&world);
+            let camera = Arc::clone(&camera);
+            let progress = Arc::clone(&progress);
+
+            let handle = thread::spawn(move || {
+                for j in (thread_id as i16..image_height).step_by(num_cpus::get()) {
+                    let mut row_buffer = Vec::new();
+                    for i in 0..image_width {
+                        let mut pixel_color = Color::new(0.0, 0.0, 0.0);
+                        for _ in 0..samples_per_pixel as i64 {
+                            let ray = camera.get_ray(i as f64, j as f64);
+                            pixel_color += Ray::ray_color(&ray, max_depth, &world);
+                        }
+                        row_buffer.push(camera.pixel_samples_scale * pixel_color);
+                    }
+
+                    // Write the completed row to the buffer
+                    let mut buff = buff.lock().unwrap();
+                    for color in row_buffer {
+                        write_color(&mut *buff, color);
+                    }
+                    // Update the progress and print the scanlines remaining
+                    let mut progress = progress.lock().unwrap();
+                    *progress -= 1;
+                    print!("\rScanlines remaining: {}", *progress);
+                    io::stdout().flush().unwrap();
                 }
-                write_color(&mut buff, self.pixel_samples_scale * pixel_color);
-            }
-        }
-        print!("\rScanlines remaining: 0   ");
+            });
 
-        println!();
+            handles.push(handle);
+        }
+
+        // Wait for all threads to finish
+        for handle in handles {
+            handle.join().expect("Thread panicked");
+        }
+
+        println!("\rScanlines remaining: 0   ");
         println!("Done.");
     }
 
