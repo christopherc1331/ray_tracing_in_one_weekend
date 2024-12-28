@@ -7,8 +7,6 @@ pub mod ray;
 pub mod util;
 pub mod vec3;
 
-use core::f64;
-
 use camera::{Camera, CameraConfig};
 use color::Color;
 use materials::{dielectric::Dielectric, lambertian::Lambertian, material::Material, metal::Metal};
@@ -35,7 +33,7 @@ fn main() {
             let rand_double: f64 = random_double();
             let center: Point3 = Point3::new(
                 a as f64 + 0.9 * random_double(),
-                0.2,
+                0.0,
                 b as f64 + 0.9 * random_double(),
             );
             if (center - *fixed_point).length() <= 0.9 {
