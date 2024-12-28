@@ -7,8 +7,6 @@ pub mod ray;
 pub mod util;
 pub mod vec3;
 
-use core::f64;
-
 use camera::{Camera, CameraConfig};
 use color::Color;
 use materials::{dielectric::Dielectric, lambertian::Lambertian, material::Material, metal::Metal};
@@ -35,7 +33,7 @@ fn main() {
             let rand_double: f64 = random_double();
             let center: Point3 = Point3::new(
                 a as f64 + 0.9 * random_double(),
-                0.2,
+                0.0,
                 b as f64 + 0.9 * random_double(),
             );
             if (center - *fixed_point).length() <= 0.9 {
@@ -73,21 +71,21 @@ fn main() {
 
     let material1: Material = Material::Dielectric(Dielectric::new(1.5));
     world.add(HittableType::Sphere(Sphere::new(
-        &Point3::new(0.0, 1.0, 0.0),
+        &Point3::new(0.0, 0.0, 0.0),
         1.0,
         material1,
     )));
 
     let material2: Material = Material::Lambertian(Lambertian::new(Color::new(0.4, 0.2, 0.1)));
     world.add(HittableType::Sphere(Sphere::new(
-        &Color::new(-4.0, 1.0, 0.0),
+        &Color::new(-4.0, 0.0, 0.0),
         1.0,
         material2,
     )));
 
     let material3: Material = Material::Metal(Metal::new(Color::new(0.7, 0.6, 0.5), 0.0));
     world.add(HittableType::Sphere(Sphere::new(
-        &Color::new(4.0, 1.0, 0.0),
+        &Color::new(4.0, 0.0, 0.0),
         1.0,
         material3,
     )));
