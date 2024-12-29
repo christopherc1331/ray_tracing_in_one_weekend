@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use super::{hittable_list::HittableList, sphere::Sphere};
 use crate::{
     interval::Interval,
@@ -11,7 +13,7 @@ pub struct HitRecord {
     pub p: Point3,
     pub normal: Vec3,
     pub t: f64,
-    pub mat: Material,
+    pub mat: Arc<Material>, // Use Arc to make Material thread-safe
     pub front_face: bool,
 }
 
@@ -29,11 +31,11 @@ impl HitRecord {
 }
 
 pub enum HittableType {
-    Sphere(Sphere),
-    List(HittableList),
+    Sphere(Arc<Sphere>),     // Use Arc to make Sphere thread-safe
+    List(Arc<HittableList>), // Use Arc for thread-safe HittableList
 }
 
-pub trait Hittable<'a> {
+pub trait Hittable<'a>: Send + Sync {
     fn hit(&self, r: &Ray, ray_t: &Interval, rec: &'a mut HitRecord) -> bool;
 }
 

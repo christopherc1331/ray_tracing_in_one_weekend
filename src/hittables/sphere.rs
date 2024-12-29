@@ -1,4 +1,4 @@
-use std::rc::Rc;
+use std::sync::Arc;
 
 use super::hittable::{HitRecord, Hittable};
 use crate::{
@@ -11,7 +11,7 @@ use crate::{
 pub struct Sphere {
     center: Point3,
     radius: f64,
-    mat: Rc<Material>,
+    mat: Arc<Material>, // Use Arc instead of Rc for thread safety
 }
 
 impl Sphere {
@@ -19,7 +19,7 @@ impl Sphere {
         Self {
             center: *center,
             radius: radius.max(0.0),
-            mat: Rc::new(mat),
+            mat: Arc::new(mat), // Wrap Material in an Arc
         }
     }
 }
@@ -47,10 +47,11 @@ impl<'a> Hittable<'a> for Sphere {
 
         rec.t = root;
         rec.p = r.at(rec.t);
-        rec.mat = self.mat.as_ref().clone();
+        rec.mat = self.mat.clone(); // Clone the material reference
         let outward_normal: Vec3 = (rec.p - self.center) / self.radius;
         rec.set_face_normal(r, &outward_normal);
 
         true
     }
 }
+
