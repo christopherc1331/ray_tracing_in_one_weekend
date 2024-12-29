@@ -61,15 +61,17 @@ impl Camera {
             .into_par_iter() // Convert into a parallel iterator
             .for_each(|j| {
                 print!("\rScanlines remaining: {}", (self.image_height as i16) - j);
-                let mut row_colors = vec![default_value; self.image_width as usize];
                 for i in 0..(self.image_width as i16) {
                     let mut pixel_color: Color = Color::new(0.0, 0.0, 0.0);
                     for _ in 0..self.samples_per_pixel as i64 {
                         let ray: Ray = self.get_ray(i as f64, j as f64);
                         pixel_color += Ray::ray_color(&ray, self.max_depth, &world);
                     }
+                    let mut colors_guard = colors.lock().unwrap();
+                    let idx = (j as usize * self.image_width as usize)
+                        + (i as usize * self.image_width as usize);
                     let color: [u8; 11] = build_color(self.pixel_samples_scale * pixel_color);
-                    row_colors[i as usize] = color;
+                    colors_guard[idx] = color;
                 }
             });
 
