@@ -60,6 +60,7 @@ impl Camera {
         (0..(self.image_height as i16))
             .into_par_iter() // Convert into a parallel iterator
             .for_each(|j| {
+                print!("\rScanlines remaining: {}", (self.image_height as i16) - j);
                 let mut row_colors = vec![default_value; self.image_width as usize];
                 for i in 0..(self.image_width as i16) {
                     let mut pixel_color: Color = Color::new(0.0, 0.0, 0.0);
@@ -70,11 +71,6 @@ impl Camera {
                     let color: [u8; 11] = build_color(self.pixel_samples_scale * pixel_color);
                     row_colors[i as usize] = color;
                 }
-                // Write the row to the colors Vec in a thread-safe manner
-                let mut colors_guard = colors.lock().unwrap();
-                let start_idx = (j as usize) * (self.image_width as usize);
-                colors_guard[start_idx..start_idx + self.image_width as usize]
-                    .copy_from_slice(&row_colors);
             });
 
         // Write all the colors to the file
