@@ -1,8 +1,9 @@
-use rayon::prelude::*;
 use std::{
     io::{self, Write},
     sync::Mutex,
 };
+
+use rayon::prelude::*; // Ensure rayon's parallel iterator traits are imported
 
 use crate::{
     color::{build_color, write_color, Color},
@@ -60,23 +61,29 @@ impl Camera {
         (0..(self.image_height as i16))
             .into_par_iter() // Convert into a parallel iterator
             .for_each(|j| {
-                print!("\rScanlines remaining: {}", (self.image_height as i16) - j);
                 for i in 0..(self.image_width as i16) {
+                    print!(
+                        "\r|Render| Scanlines remaining: {}",
+                        self.image_width as i16 - i
+                    );
                     let mut pixel_color: Color = Color::new(0.0, 0.0, 0.0);
                     for _ in 0..self.samples_per_pixel as i64 {
                         let ray: Ray = self.get_ray(i as f64, j as f64);
                         pixel_color += Ray::ray_color(&ray, self.max_depth, &world);
                     }
+                    let color: [u8; 11] = build_color(self.pixel_samples_scale * pixel_color);
                     let mut colors_guard = colors.lock().unwrap();
                     let idx = (j as usize * self.image_width as usize)
-                        + (i as usize * self.image_width as usize);
-                    let color: [u8; 11] = build_color(self.pixel_samples_scale * pixel_color);
+                        + (i as usize * self.image_height as usize);
                     colors_guard[idx] = color;
                 }
+                // Write the row to the colors Vec in a thread-safe manner
             });
 
         // Write all the colors to the file
-        for color in colors.lock().unwrap().iter() {
+        let color_len = colors.lock().unwrap().len();
+        for (i, color) in colors.lock().unwrap().iter().enumerate() {
+            print!("\r|Write| Scanlines remaining: {}", color_len - i);
             write_color(&mut buff, u8_to_string(color));
         }
 
