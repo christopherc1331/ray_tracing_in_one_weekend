@@ -1,4 +1,7 @@
-use std::io::{self, Write};
+use std::{
+    io::{self, Write},
+    time::SystemTime,
+};
 
 use crate::{
     color::{write_color, Color},
@@ -41,6 +44,7 @@ pub struct Camera {
 
 impl Camera {
     pub fn render(self, world: HittableType) {
+        let now = SystemTime::now();
         let file = std::fs::File::create("image.ppm").expect("Image file to be created");
         let mut buff = std::io::BufWriter::new(file);
 
@@ -63,6 +67,13 @@ impl Camera {
             }
         }
         print!("\rScanlines remaining: 0   ");
+
+        stdout.flush().unwrap();
+        println!();
+        println!(
+            "Render time (minutes): {}",
+            now.elapsed().unwrap().as_secs() as f32 / 60.0
+        );
 
         println!();
         println!("Done.");
