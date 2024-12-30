@@ -24,13 +24,13 @@ fn main() {
     let ground_material: Material =
         Material::Lambertian(Lambertian::new(Color::new(0.5, 0.5, 0.5)));
     let sphere_ground: HittableType = HittableType::Sphere(Arc::new(Sphere::new(
-        &Point3::new(0.0, -1000.5, 0.0),
+        &Point3::new(0.0, -1000.0, 0.0),
         1000.0,
         ground_material,
     )));
     world.add(sphere_ground);
 
-    let fixed_point: &Point3 = &Point3::new(4.0, 0.0, 0.0);
+    let fixed_point: &Point3 = &Point3::new(4.0, 0.2, 0.0);
     for a in -11..11 {
         for b in -11..11 {
             let rand_double: f64 = random_double();
@@ -74,21 +74,21 @@ fn main() {
 
     let material1: Material = Material::Dielectric(Dielectric::new(1.5));
     world.add(HittableType::Sphere(Arc::new(Sphere::new(
-        &Point3::new(0.0, 0.5, 0.0),
+        &Point3::new(0.0, 1.0, 0.0),
         1.0,
         material1,
     ))));
 
     let material2: Material = Material::Lambertian(Lambertian::new(Color::new(0.4, 0.2, 0.1)));
     world.add(HittableType::Sphere(Arc::new(Sphere::new(
-        &Color::new(-4.0, 0.5, 0.0),
+        &Color::new(-4.0, 1.0, 0.0),
         1.0,
         material2,
     ))));
 
     let material3: Material = Material::Metal(Metal::new(Color::new(0.7, 0.6, 0.5), 0.0));
     world.add(HittableType::Sphere(Arc::new(Sphere::new(
-        &Color::new(4.0, 0.5, 0.0),
+        &Color::new(4.0, 1.0, 0.0),
         1.0,
         material3,
     ))));
