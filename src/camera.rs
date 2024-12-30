@@ -1,6 +1,7 @@
 use std::{
     io::{self, Write},
-    sync::Mutex,
+    sync::{Arc, Mutex},
+    time::SystemTime,
 };
 
 use rayon::prelude::*; // Ensure rayon's parallel iterator traits are imported
@@ -43,6 +44,7 @@ pub struct Camera {
 
 impl Camera {
     pub fn render(self, world: HittableType) {
+        let render_sw = SystemTime::now();
         let mut stdout = io::stdout();
         let file = std::fs::File::create("image.ppm").expect("Image file to be created");
         let mut buff = std::io::BufWriter::new(file);
@@ -56,40 +58,60 @@ impl Camera {
             default_value;
             (self.image_height * self.image_width) as usize
         ]);
+        let colors_len: &usize = &colors.lock().unwrap().len();
+        let completed_ct: Arc<Mutex<i64>> = Arc::new(Mutex::new(0));
 
         // Parallelize the outer loop
         (0..(self.image_height as i16))
             .into_par_iter() // Convert into a parallel iterator
             .for_each(|j| {
                 for i in 0..(self.image_width as i16) {
-                    print!(
-                        "\r|Render| Scanlines remaining: {}",
-                        self.image_width as i16 - i
-                    );
-                    let mut pixel_color: Color = Color::new(0.0, 0.0, 0.0);
+                    let mut pixel_color: Color = Color::default();
                     for _ in 0..self.samples_per_pixel as i64 {
                         let ray: Ray = self.get_ray(i as f64, j as f64);
                         pixel_color += Ray::ray_color(&ray, self.max_depth, &world);
                     }
                     let color: [u8; 11] = build_color(self.pixel_samples_scale * pixel_color);
                     let mut colors_guard = colors.lock().unwrap();
-                    let idx = (j as usize * self.image_width as usize)
-                        + (i as usize * self.image_height as usize);
+                    let idx = (j as usize * self.image_width as usize) + i as usize;
+
                     colors_guard[idx] = color;
+                    let mut count_guard = completed_ct.lock().unwrap();
+                    *count_guard += 1;
+                    print!(
+                        "\r|Render| Progress: {:.3}%",
+                        (*count_guard as f32 / (*colors_len - 1) as f32) * 100.0
+                    );
                 }
-                // Write the row to the colors Vec in a thread-safe manner
             });
 
+        stdout.flush().unwrap();
+        println!();
+        println!(
+            "Render time (minutes): {}",
+            render_sw.elapsed().unwrap().as_secs() as f32 / 60.0
+        );
+
+        stdout.flush().unwrap();
+        println!();
+
         // Write all the colors to the file
+        let write_sw = SystemTime::now();
         let color_len = colors.lock().unwrap().len();
         for (i, color) in colors.lock().unwrap().iter().enumerate() {
-            print!("\r|Write| Scanlines remaining: {}", color_len - i);
+            print!(
+                "\r|Write| Progress: {:.3}%",
+                (i as f32 / (color_len - 1) as f32) * 100.0
+            );
             write_color(&mut buff, u8_to_string(color));
         }
 
-        print!("\rScanlines remaining: 0   ");
         stdout.flush().unwrap();
         println!();
+        println!(
+            "Write time (minutes): {}",
+            write_sw.elapsed().unwrap().as_secs() as f32 / 60.0
+        );
         println!("Done.");
     }
 
