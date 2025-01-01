@@ -1,10 +1,13 @@
 use std::{
     io::{self, Write},
+    sync::{Arc, Mutex},
     time::SystemTime,
 };
 
+use rayon::prelude::*; // Ensure rayon's parallel iterator traits are imported
+
 use crate::{
-    color::{write_color, Color},
+    color::{build_color, write_color, Color},
     hittables::hittable::HittableType,
     ray::{Point3, Ray},
     util::{degrees_to_radians, random_double},
@@ -34,9 +37,6 @@ pub struct Camera {
     pixel00_loc: Point3,
     pixel_delta_u: Vec3,
     pixel_delta_v: Vec3,
-    u: Vec3,
-    v: Vec3,
-    w: Vec3,
     defocus_angle: f64,
     defocus_disk_u: Vec3,
     defocus_disk_v: Vec3,
@@ -44,38 +44,74 @@ pub struct Camera {
 
 impl Camera {
     pub fn render(self, world: HittableType) {
-        let now = SystemTime::now();
+        let render_sw = SystemTime::now();
+        let mut stdout = io::stdout();
         let file = std::fs::File::create("image.ppm").expect("Image file to be created");
         let mut buff = std::io::BufWriter::new(file);
-
         writeln!(buff, "P3\n").expect("to write ppm metadata");
         writeln!(buff, "{} {}\n", self.image_width, self.image_height)
             .expect("to write ppm metadata");
         writeln!(buff, "255\n").expect("to write ppm metadata");
 
-        let mut stdout = io::stdout();
-        for j in 0..(self.image_height as i16) {
-            print!("\rScanlines remaining: {}", (self.image_height as i16) - j);
-            stdout.flush().unwrap();
-            for i in 0..(self.image_width as i16) {
-                let mut pixel_color: Color = Color::new(0.0, 0.0, 0.0);
-                for _ in 0..self.samples_per_pixel as i64 {
-                    let ray: Ray = self.get_ray(i as f64, j as f64);
-                    pixel_color += Ray::ray_color(&ray, self.max_depth, &world);
+        let default_value: [u8; 11] = [b' '; 11];
+        let colors = Mutex::new(vec![
+            default_value;
+            (self.image_height * self.image_width) as usize
+        ]);
+        let colors_len: &usize = &colors.lock().unwrap().len();
+        let completed_ct: Arc<Mutex<i64>> = Arc::new(Mutex::new(0));
+
+        // Parallelize the outer loop
+        (0..(self.image_height as i16))
+            .into_par_iter() // Convert into a parallel iterator
+            .for_each(|j| {
+                for i in 0..(self.image_width as i16) {
+                    let mut pixel_color: Color = Color::default();
+                    for _ in 0..self.samples_per_pixel as i64 {
+                        let ray: Ray = self.get_ray(i as f64, j as f64);
+                        pixel_color += Ray::ray_color(&ray, self.max_depth, &world);
+                    }
+                    let color: [u8; 11] = build_color(self.pixel_samples_scale * pixel_color);
+                    let mut colors_guard = colors.lock().unwrap();
+                    let idx = (j as usize * self.image_width as usize) + i as usize;
+
+                    colors_guard[idx] = color;
+                    let mut count_guard = completed_ct.lock().unwrap();
+                    *count_guard += 1;
+                    print!(
+                        "\r|Render| Progress: {:.3}%",
+                        (*count_guard as f32 / (*colors_len - 1) as f32) * 100.0
+                    );
                 }
-                write_color(&mut buff, self.pixel_samples_scale * pixel_color);
-            }
-        }
-        print!("\rScanlines remaining: 0   ");
+            });
 
         stdout.flush().unwrap();
         println!();
         println!(
             "Render time (minutes): {}",
-            now.elapsed().unwrap().as_secs() as f32 / 60.0
+            render_sw.elapsed().unwrap().as_secs() as f32 / 60.0
         );
 
+        stdout.flush().unwrap();
         println!();
+
+        // Write all the colors to the file
+        let write_sw = SystemTime::now();
+        let color_len = colors.lock().unwrap().len();
+        for (i, color) in colors.lock().unwrap().iter().enumerate() {
+            print!(
+                "\r|Write| Progress: {:.3}%",
+                (i as f32 / (color_len - 1) as f32) * 100.0
+            );
+            write_color(&mut buff, u8_to_string(color));
+        }
+
+        stdout.flush().unwrap();
+        println!();
+        println!(
+            "Write time (minutes): {}",
+            write_sw.elapsed().unwrap().as_secs() as f32 / 60.0
+        );
         println!("Done.");
     }
 
@@ -131,9 +167,6 @@ impl Camera {
             pixel00_loc,
             pixel_delta_u,
             pixel_delta_v,
-            u,
-            v,
-            w,
             defocus_disk_u,
             defocus_disk_v,
         }
@@ -163,4 +196,18 @@ impl Camera {
         let p: Vec3 = random_in_unit_disk();
         self.center + (p.e[0] * self.defocus_disk_u) + (p.e[1] * self.defocus_disk_v)
     }
+}
+
+fn u8_to_string(bytes: &[u8; 11]) -> String {
+    std::str::from_utf8(bytes)
+        .expect("Invalid UTF-8")
+        .to_string()
+}
+
+pub fn string_to_u8(string: &str) -> [u8; 11] {
+    let mut array = [b' '; 11]; // Initialize with spaces
+    let bytes = string.as_bytes();
+    let len = bytes.len().min(11); // Truncate if necessary
+    array[..len].copy_from_slice(&bytes[..len]);
+    array
 }

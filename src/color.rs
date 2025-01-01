@@ -1,4 +1,4 @@
-use crate::{interval::Interval, vec3::Vec3};
+use crate::{camera::string_to_u8, interval::Interval, vec3::Vec3};
 use std::io::Write;
 
 pub type Color = Vec3;
@@ -11,7 +11,7 @@ fn linear_to_gamma(linear_component: f64) -> f64 {
 }
 
 static INTENSITY: Interval = Interval::new(0.0, 0.999);
-pub fn write_color(out: &mut impl Write, pixel_color: Color) {
+pub fn build_color(pixel_color: Color) -> [u8; 11] {
     // Apply a linear to gamma transform for gamma 2
     let r: f64 = linear_to_gamma(pixel_color.x());
     let g: f64 = linear_to_gamma(pixel_color.y());
@@ -22,5 +22,10 @@ pub fn write_color(out: &mut impl Write, pixel_color: Color) {
     let g_byte: i64 = (255.999 * INTENSITY.clamp(g)) as i64;
     let b_byte: i64 = (255.999 * INTENSITY.clamp(b)) as i64;
 
-    writeln!(out, "{} {} {}", r_byte, g_byte, b_byte).expect("to write ppm metadata");
+    let color: String = format!("{} {} {}", r_byte, g_byte, b_byte);
+    string_to_u8(&color)
+}
+
+pub fn write_color(out: &mut impl Write, pixel_color: String) {
+    writeln!(out, "{}", pixel_color).expect("to write ppm metadata");
 }

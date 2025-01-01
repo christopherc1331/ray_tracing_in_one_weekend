@@ -16,17 +16,20 @@ use vec3::Vec3;
 
 use crate::hittables::{hittable::HittableType, hittable_list::HittableList, sphere::Sphere};
 
+use std::sync::Arc;
+
 fn main() {
     let mut world: HittableList = HittableList::default();
 
     let ground_material: Material =
         Material::Lambertian(Lambertian::new(Color::new(0.5, 0.5, 0.5)));
-    let sphere_ground: HittableType = HittableType::Sphere(Sphere::new(
+    let sphere_ground: HittableType = HittableType::Sphere(Arc::new(Sphere::new(
         &Point3::new(0.0, -1000.0, 0.0),
         1000.0,
         ground_material,
-    ));
+    )));
     world.add(sphere_ground);
+
     let fixed_point: &Point3 = &Point3::new(4.0, 0.2, 0.0);
     for a in -11..11 {
         for b in -11..11 {
@@ -46,7 +49,7 @@ fn main() {
                     let albedo: Color = Color::random() * Color::random();
                     let material: Material = Material::Lambertian(Lambertian::new(albedo));
                     let sphere: HittableType =
-                        HittableType::Sphere(Sphere::new(&center, 0.2, material));
+                        HittableType::Sphere(Arc::new(Sphere::new(&center, 0.2, material)));
                     world.add(sphere);
                 }
                 rd if rd < 0.95 => {
@@ -55,14 +58,14 @@ fn main() {
                     let fuzz: f64 = random_double_range(0.0, 0.5);
                     let material: Material = Material::Metal(Metal::new(albedo, fuzz));
                     let sphere: HittableType =
-                        HittableType::Sphere(Sphere::new(&center, 0.2, material));
+                        HittableType::Sphere(Arc::new(Sphere::new(&center, 0.2, material)));
                     world.add(sphere);
                 }
                 _ => {
                     // glass
                     let material: Material = Material::Dielectric(Dielectric::new(1.5));
                     let sphere: HittableType =
-                        HittableType::Sphere(Sphere::new(&center, 0.2, material));
+                        HittableType::Sphere(Arc::new(Sphere::new(&center, 0.2, material)));
                     world.add(sphere);
                 }
             }
@@ -70,25 +73,25 @@ fn main() {
     }
 
     let material1: Material = Material::Dielectric(Dielectric::new(1.5));
-    world.add(HittableType::Sphere(Sphere::new(
-        &Point3::new(0.0, 0.5, 0.0),
+    world.add(HittableType::Sphere(Arc::new(Sphere::new(
+        &Point3::new(0.0, 1.0, 0.0),
         1.0,
         material1,
-    )));
+    ))));
 
     let material2: Material = Material::Lambertian(Lambertian::new(Color::new(0.4, 0.2, 0.1)));
-    world.add(HittableType::Sphere(Sphere::new(
-        &Color::new(-4.0, 0.5, 0.0),
+    world.add(HittableType::Sphere(Arc::new(Sphere::new(
+        &Color::new(-4.0, 1.0, 0.0),
         1.0,
         material2,
-    )));
+    ))));
 
     let material3: Material = Material::Metal(Metal::new(Color::new(0.7, 0.6, 0.5), 0.0));
-    world.add(HittableType::Sphere(Sphere::new(
-        &Color::new(4.0, 0.5, 0.0),
+    world.add(HittableType::Sphere(Arc::new(Sphere::new(
+        &Color::new(4.0, 1.0, 0.0),
         1.0,
         material3,
-    )));
+    ))));
 
     let camera = Camera::new(CameraConfig {
         aspect_ratio: 16.0 / 9.0,
@@ -98,10 +101,10 @@ fn main() {
         vfov: 20.0,
         look_from: Point3::new(13.0, 2.0, 3.0),
         look_at: Point3::new(0.0, 0.0, 0.0),
-        v_up: Vec3::new(0.0, 1.0, 0.0),
+        v_up: Vec3::new(0.0, 0.2, 0.0),
         defocus_angle: 0.6,
         focus_dist: 10.0,
     });
 
-    camera.render(HittableType::List(world));
+    camera.render(HittableType::List(Arc::new(world)));
 }
