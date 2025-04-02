@@ -43,32 +43,28 @@ fn main() {
                 continue;
             }
 
-            match rand_double {
+            let sphere: HittableType = match rand_double {
                 rd if rd < 0.8 => {
                     // diffuse
                     let albedo: Color = Color::random() * Color::random();
                     let material: Material = Material::Lambertian(Lambertian::new(albedo));
-                    let sphere: HittableType =
-                        HittableType::Sphere(Arc::new(Sphere::new(&center, 0.2, material)));
-                    world.add(sphere);
+                    HittableType::Sphere(Arc::new(Sphere::new(&center, 0.2, material)))
                 }
                 rd if rd < 0.95 => {
                     // metal
                     let albedo: Color = Color::random_range(0.5, 1.0);
                     let fuzz: f64 = random_double_range(0.0, 0.5);
                     let material: Material = Material::Metal(Metal::new(albedo, fuzz));
-                    let sphere: HittableType =
-                        HittableType::Sphere(Arc::new(Sphere::new(&center, 0.2, material)));
-                    world.add(sphere);
+                    HittableType::Sphere(Arc::new(Sphere::new(&center, 0.2, material)))
                 }
                 _ => {
                     // glass
                     let material: Material = Material::Dielectric(Dielectric::new(1.5));
-                    let sphere: HittableType =
-                        HittableType::Sphere(Arc::new(Sphere::new(&center, 0.2, material)));
-                    world.add(sphere);
+                    HittableType::Sphere(Arc::new(Sphere::new(&center, 0.2, material)))
                 }
-            }
+            };
+
+            world.add(sphere);
         }
     }
 
